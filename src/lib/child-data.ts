@@ -97,19 +97,20 @@ export function useSaveChecklistItem(childId?: string) {
       photoPath?: string | null;
     }) => {
       const parent_id = await requireUserId();
-      const payload: Record<string, unknown> = {
-        child_id: childId,
+      const payload = {
+        child_id: childId!,
         parent_id,
         item_id: input.itemId,
         updated_at: new Date().toISOString(),
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.note !== undefined ? { note: input.note } : {}),
+        ...(input.photoPath !== undefined ? { photo_path: input.photoPath } : {}),
       };
-      if (input.status !== undefined) payload.status = input.status;
-      if (input.note !== undefined) payload.note = input.note;
-      if (input.photoPath !== undefined) payload.photo_path = input.photoPath;
       const { error } = await supabase
         .from("checklist_progress")
         .upsert(payload, { onConflict: "child_id,item_id" });
       if (error) throw error;
+
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["checklist", childId] }),
   });
@@ -140,19 +141,20 @@ export function useSaveActivity(childId?: string) {
       photoPath?: string | null;
     }) => {
       const parent_id = await requireUserId();
-      const payload: Record<string, unknown> = {
-        child_id: childId,
+      const payload = {
+        child_id: childId!,
         parent_id,
         activity_id: input.activityId,
         updated_at: new Date().toISOString(),
+        ...(input.done !== undefined ? { done: input.done } : {}),
+        ...(input.note !== undefined ? { note: input.note } : {}),
+        ...(input.photoPath !== undefined ? { photo_path: input.photoPath } : {}),
       };
-      if (input.done !== undefined) payload.done = input.done;
-      if (input.note !== undefined) payload.note = input.note;
-      if (input.photoPath !== undefined) payload.photo_path = input.photoPath;
       const { error } = await supabase
         .from("activity_progress")
         .upsert(payload, { onConflict: "child_id,activity_id" });
       if (error) throw error;
+
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["activities", childId] }),
   });
