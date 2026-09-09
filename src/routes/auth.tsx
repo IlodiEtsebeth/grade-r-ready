@@ -29,7 +29,7 @@ const schema = z.object({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signup");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,6 +47,33 @@ function AuthPage() {
     e.preventDefault();
     setError(null);
     setInfo(null);
+
+    if (mode === "forgot") {
+      const parsed = z
+        .string()
+        .trim()
+        .email("Please enter a valid email address")
+        .max(255)
+        .safeParse(email);
+      if (!parsed.success) {
+        setError(parsed.error.issues[0]?.message ?? "Please check your details");
+        return;
+      }
+      setBusy(true);
+      try {
+        const { error: err } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (err) throw err;
+        setInfo("If that email has an account, a reset link is on its way. Check your inbox.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
     const parsed = schema.safeParse({ email, password, fullName });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details");
@@ -96,12 +123,18 @@ function AuthPage() {
           </Link>
 
           <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-balance">
-            {mode === "signup" ? "Create your parent account" : "Welcome back"}
+            {mode === "signup"
+              ? "Create your parent account"
+              : mode === "forgot"
+                ? "Reset your password"
+                : "Welcome back"}
           </h1>
           <p className="mt-2 text-[13px] text-muted-foreground">
             {mode === "signup"
               ? "It takes about a minute. You only need one account for your Grade R child."
-              : "Sign in to carry on with the checklist and this week's activities."}
+              : mode === "forgot"
+                ? "Enter your email and we'll send you a link to set a new password."
+                : "Sign in to carry on with the checklist and this week's activities."}
           </p>
 
           <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
@@ -129,18 +162,34 @@ function AuthPage() {
                 className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
               />
             </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold">Password</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                maxLength={72}
-                autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                placeholder="At least 6 characters"
-                className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
-              />
-            </label>
+            {mode !== "forgot" && (
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[12px] font-semibold">Password</span>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  maxLength={72}
+                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                  placeholder="At least 6 characters"
+                  className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
+                />
+              </label>
+            )}
+
+            {mode === "signin" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("forgot");
+                  setError(null);
+                  setInfo(null);
+                }}
+                className="self-end text-[12px] font-semibold text-ochre"
+              >
+                Forgot password?
+              </button>
+            )}
 
             {error && (
               <p className="rounded-xl bg-ochre-soft px-4 py-3 text-[13px] text-foreground">
@@ -148,7 +197,9 @@ function AuthPage() {
               </p>
             )}
             {info && (
-              <p className="rounded-xl bg-aloe-soft px-4 py-3 text-[13px] text-foreground">{info}</p>
+              <p className="rounded-xl bg-aloe-soft px-4 py-3 text-[13px] text-foreground">
+                {info}
+              </p>
             )}
 
             <button
@@ -156,20 +207,39 @@ function AuthPage() {
               disabled={busy}
               className="mt-2 rounded-xl bg-foreground py-3.5 text-[14px] font-semibold text-background transition active:scale-[0.99] disabled:opacity-60"
             >
-              {busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
+              {busy
+                ? "Please wait…"
+                : mode === "signup"
+                  ? "Create account"
+                  : mode === "forgot"
+                    ? "Send reset link"
+                    : "Sign in"}
             </button>
           </form>
 
-          <button
-            onClick={() => {
-              setMode(mode === "signup" ? "signin" : "signup");
-              setError(null);
-              setInfo(null);
-            }}
-            className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
-          >
-            {mode === "signup" ? "I already have an account" : "I need to create an account"}
-          </button>
+          {mode === "forgot" ? (
+            <button
+              onClick={() => {
+                setMode("signin");
+                setError(null);
+                setInfo(null);
+              }}
+              className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
+            >
+              ‹ Back to sign in
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setMode(mode === "signup" ? "signin" : "signup");
+                setError(null);
+                setInfo(null);
+              }}
+              className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
+            >
+              {mode === "signup" ? "I already have an account" : "I need to create an account"}
+            </button>
+          )}
         </div>
       </div>
     </div>
