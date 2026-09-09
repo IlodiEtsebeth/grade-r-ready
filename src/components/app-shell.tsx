@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="relative z-10 flex flex-1 flex-col gap-4 px-4 pt-5 pb-28">{children}</div>
 
-        <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[440px] -translate-x-1/2 border-t border-line bg-surface/80 px-4 pt-2.5 pb-5 backdrop-blur-xl">
+        <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[440px] -translate-x-1/2 border-t border-line bg-surface/80 px-4 pt-2.5 pb-5 backdrop-blur-xl print:hidden">
           <div className="flex items-center justify-between">
             {NAV.map((item) => {
               const active = pathname === item.to;
@@ -70,7 +70,9 @@ export function ScreenHeader({
     <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
       <div className="min-w-0">
         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">{eyebrow}</p>
-        <h1 className="mt-1 truncate font-display text-xl font-extrabold tracking-tight">{title}</h1>
+        <h1 className="mt-1 truncate font-display text-xl font-extrabold tracking-tight">
+          {title}
+        </h1>
       </div>
       {right}
     </header>
