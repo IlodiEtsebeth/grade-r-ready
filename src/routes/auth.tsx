@@ -1,0 +1,177 @@
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+
+export const Route = createFileRoute("/auth")({
+  head: () => ({
+    meta: [
+      { title: "Sign in — Grade R Ready" },
+      {
+        name: "description",
+        content: "Sign in or create a free parent account to track your Grade R child's readiness.",
+      },
+      { property: "og:title", content: "Sign in — Grade R Ready" },
+      {
+        property: "og:description",
+        content: "Parent sign-in for the Grade R readiness checklist and weekly home activities.",
+      },
+    ],
+  }),
+  component: AuthPage,
+});
+
+const schema = z.object({
+  email: z.string().trim().email("Please enter a valid email address").max(255),
+  password: z.string().min(6, "Password must be at least 6 characters").max(72),
+  fullName: z.string().trim().max(100).optional(),
+});
+
+function AuthPage() {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"signin" | "signup">("signup");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) navigate({ to: "/dashboard", replace: true });
+    });
+  }, [navigate]);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setInfo(null);
+    const parsed = schema.safeParse({ email, password, fullName });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Please check your details");
+      return;
+    }
+    setBusy(true);
+    try {
+      if (mode === "signup") {
+        const { data, error: err } = await supabase.auth.signUp({
+          email: parsed.data.email,
+          password: parsed.data.password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { full_name: parsed.data.fullName ?? "" },
+          },
+        });
+        if (err) throw err;
+        if (!data.session) {
+          setInfo("Almost there — check your email and click the link to confirm your account.");
+          return;
+        }
+        navigate({ to: "/setup", replace: true });
+      } else {
+        const { error: err } = await supabase.auth.signInWithPassword({
+          email: parsed.data.email,
+          password: parsed.data.password,
+        });
+        if (err) throw err;
+        navigate({ to: "/dashboard", replace: true });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background font-body text-foreground antialiased">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col overflow-hidden px-5 pt-8 pb-10">
+        <div className="pointer-events-none absolute -top-8 -left-12 h-72 w-72 rounded-full bg-sungold/40 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-20 -right-16 h-64 w-64 rounded-full bg-aloe/30 blur-3xl" />
+
+        <div className="relative z-10">
+          <Link to="/" className="font-mono text-[11px] text-muted-foreground">
+            ‹ Back
+          </Link>
+
+          <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-balance">
+            {mode === "signup" ? "Create your parent account" : "Welcome back"}
+          </h1>
+          <p className="mt-2 text-[13px] text-muted-foreground">
+            {mode === "signup"
+              ? "It takes about a minute. You only need one account for your Grade R child."
+              : "Sign in to carry on with the checklist and this week's activities."}
+          </p>
+
+          <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
+            {mode === "signup" && (
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[12px] font-semibold">Your name</span>
+                <input
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  maxLength={100}
+                  placeholder="e.g. Lerato"
+                  className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
+                />
+              </label>
+            )}
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[12px] font-semibold">Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                maxLength={255}
+                autoComplete="email"
+                placeholder="you@email.com"
+                className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[12px] font-semibold">Password</span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                maxLength={72}
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                placeholder="At least 6 characters"
+                className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
+              />
+            </label>
+
+            {error && (
+              <p className="rounded-xl bg-ochre-soft px-4 py-3 text-[13px] text-foreground">
+                {error}
+              </p>
+            )}
+            {info && (
+              <p className="rounded-xl bg-aloe-soft px-4 py-3 text-[13px] text-foreground">{info}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="mt-2 rounded-xl bg-foreground py-3.5 text-[14px] font-semibold text-background transition active:scale-[0.99] disabled:opacity-60"
+            >
+              {busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
+            </button>
+          </form>
+
+          <button
+            onClick={() => {
+              setMode(mode === "signup" ? "signin" : "signup");
+              setError(null);
+              setInfo(null);
+            }}
+            className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
+          >
+            {mode === "signup" ? "I already have an account" : "I need to create an account"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
