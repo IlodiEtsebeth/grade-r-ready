@@ -110,7 +110,6 @@ export function useSaveChecklistItem(childId?: string) {
         .from("checklist_progress")
         .upsert(payload, { onConflict: "child_id,item_id" });
       if (error) throw error;
-
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["checklist", childId] }),
   });
@@ -154,7 +153,6 @@ export function useSaveActivity(childId?: string) {
         .from("activity_progress")
         .upsert(payload, { onConflict: "child_id,activity_id" });
       if (error) throw error;
-
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["activities", childId] }),
   });
@@ -172,4 +170,14 @@ export async function uploadPhoto(file: File) {
 export async function photoUrl(path: string) {
   const { data } = await supabase.storage.from("activity-photos").createSignedUrl(path, 3600);
   return data?.signedUrl ?? null;
+}
+
+/** Signed URL for a stored photo, re-fetched well before the 1 hour link expires. */
+export function usePhotoUrl(path: string | null | undefined) {
+  return useQuery({
+    queryKey: ["photo-url", path],
+    enabled: !!path,
+    queryFn: () => photoUrl(path!),
+    staleTime: 1000 * 60 * 45,
+  });
 }
