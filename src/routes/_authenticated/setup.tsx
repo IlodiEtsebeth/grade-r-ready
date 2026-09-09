@@ -47,7 +47,7 @@ function Setup() {
       return;
     }
     try {
-      await save.mutateAsync({ id: child?.id, ...parsed.data });
+      await save.mutateAsync(child?.id ? { id: child.id, ...parsed.data } : { ...parsed.data });
       navigate({ to: "/dashboard", replace: true });
     } catch {
       setError("We couldn't save that. Please try again.");
