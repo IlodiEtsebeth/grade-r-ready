@@ -14,7 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_progress: {
+        Row: {
+          activity_id: string
+          child_id: string
+          done: boolean
+          id: string
+          note: string | null
+          parent_id: string
+          photo_path: string | null
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          child_id: string
+          done?: boolean
+          id?: string
+          note?: string | null
+          parent_id: string
+          photo_path?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          child_id?: string
+          done?: boolean
+          id?: string
+          note?: string | null
+          parent_id?: string
+          photo_path?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_progress: {
+        Row: {
+          child_id: string
+          id: string
+          item_id: string
+          note: string | null
+          parent_id: string
+          photo_path: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          child_id: string
+          id?: string
+          item_id: string
+          note?: string | null
+          parent_id: string
+          photo_path?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          child_id?: string
+          id?: string
+          item_id?: string
+          note?: string | null
+          parent_id?: string
+          photo_path?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      children: {
+        Row: {
+          age: number | null
+          birth_date: string | null
+          created_at: string
+          id: string
+          name: string
+          parent_id: string
+          school: string | null
+        }
+        Insert: {
+          age?: number | null
+          birth_date?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          parent_id: string
+          school?: string | null
+        }
+        Update: {
+          age?: number | null
+          birth_date?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          parent_id?: string
+          school?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
