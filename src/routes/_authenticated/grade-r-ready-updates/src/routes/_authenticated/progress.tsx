@@ -12,7 +12,7 @@ import {
 } from "@/lib/content";
 import { useActivities, useChecklist, useChild } from "@/lib/child-data";
 
-export const Route = createFileRoute("/_authenticated/progress")({
+export const Route = createFileRoute("/_authenticated/grade-r-ready-updates/src/routes/_authenticated/progress")({
   head: () => ({
     meta: [
       { title: "Progress — Grade R Ready" },

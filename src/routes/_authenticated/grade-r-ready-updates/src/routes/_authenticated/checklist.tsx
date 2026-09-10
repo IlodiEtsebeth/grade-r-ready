@@ -9,7 +9,7 @@ const searchSchema = z.object({
   category: z.string().optional(),
 });
 
-export const Route = createFileRoute("/_authenticated/checklist")({
+export const Route = createFileRoute("/_authenticated/grade-r-ready-updates/src/routes/_authenticated/checklist")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [

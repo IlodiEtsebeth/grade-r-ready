@@ -19,6 +19,10 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
+import { Route as AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRouteImport } from './routes/_authenticated/grade-r-ready-updates/src/routes/_authenticated/activities'
+import { Route as AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRouteImport } from './routes/_authenticated/grade-r-ready-updates/src/routes/_authenticated/checklist'
+import { Route as AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRouteImport } from './routes/_authenticated/grade-r-ready-updates/src/routes/_authenticated/progress'
+import { Route as AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRouteImport } from './routes/_authenticated/grade-r-ready-updates/src/routes/_authenticated/report'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +73,38 @@ const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
   path: '/setup',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute =
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRouteImport.update(
+    {
+      id: '/grade-r-ready-updates/src/routes/_authenticated/activities',
+      path: '/grade-r-ready-updates/src/routes/activities',
+      getParentRoute: () => AuthenticatedRouteRoute,
+    } as any,
+  )
+const AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute =
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRouteImport.update(
+    {
+      id: '/grade-r-ready-updates/src/routes/_authenticated/checklist',
+      path: '/grade-r-ready-updates/src/routes/checklist',
+      getParentRoute: () => AuthenticatedRouteRoute,
+    } as any,
+  )
+const AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute =
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRouteImport.update(
+    {
+      id: '/grade-r-ready-updates/src/routes/_authenticated/progress',
+      path: '/grade-r-ready-updates/src/routes/progress',
+      getParentRoute: () => AuthenticatedRouteRoute,
+    } as any,
+  )
+const AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute =
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRouteImport.update(
+    {
+      id: '/grade-r-ready-updates/src/routes/_authenticated/report',
+      path: '/grade-r-ready-updates/src/routes/report',
+      getParentRoute: () => AuthenticatedRouteRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +116,10 @@ export interface FileRoutesByFullPath {
   '/progress': typeof AuthenticatedProgressRoute
   '/report': typeof AuthenticatedReportRoute
   '/setup': typeof AuthenticatedSetupRoute
+  '/grade-r-ready-updates/src/routes/activities': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute
+  '/grade-r-ready-updates/src/routes/checklist': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute
+  '/grade-r-ready-updates/src/routes/progress': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute
+  '/grade-r-ready-updates/src/routes/report': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +131,10 @@ export interface FileRoutesByTo {
   '/progress': typeof AuthenticatedProgressRoute
   '/report': typeof AuthenticatedReportRoute
   '/setup': typeof AuthenticatedSetupRoute
+  '/grade-r-ready-updates/src/routes/activities': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute
+  '/grade-r-ready-updates/src/routes/checklist': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute
+  '/grade-r-ready-updates/src/routes/progress': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute
+  '/grade-r-ready-updates/src/routes/report': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +148,10 @@ export interface FileRoutesById {
   '/_authenticated/progress': typeof AuthenticatedProgressRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
+  '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/activities': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute
+  '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/checklist': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute
+  '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/progress': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute
+  '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/report': typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +165,10 @@ export interface FileRouteTypes {
     | '/progress'
     | '/report'
     | '/setup'
+    | '/grade-r-ready-updates/src/routes/activities'
+    | '/grade-r-ready-updates/src/routes/checklist'
+    | '/grade-r-ready-updates/src/routes/progress'
+    | '/grade-r-ready-updates/src/routes/report'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +180,10 @@ export interface FileRouteTypes {
     | '/progress'
     | '/report'
     | '/setup'
+    | '/grade-r-ready-updates/src/routes/activities'
+    | '/grade-r-ready-updates/src/routes/checklist'
+    | '/grade-r-ready-updates/src/routes/progress'
+    | '/grade-r-ready-updates/src/routes/report'
   id:
     | '__root__'
     | '/'
@@ -140,6 +196,10 @@ export interface FileRouteTypes {
     | '/_authenticated/progress'
     | '/_authenticated/report'
     | '/_authenticated/setup'
+    | '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/activities'
+    | '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/checklist'
+    | '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/progress'
+    | '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/report'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -221,6 +281,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSetupRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/activities': {
+      id: '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/activities'
+      path: '/grade-r-ready-updates/src/routes/activities'
+      fullPath: '/grade-r-ready-updates/src/routes/activities'
+      preLoaderRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/checklist': {
+      id: '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/checklist'
+      path: '/grade-r-ready-updates/src/routes/checklist'
+      fullPath: '/grade-r-ready-updates/src/routes/checklist'
+      preLoaderRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/progress': {
+      id: '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/progress'
+      path: '/grade-r-ready-updates/src/routes/progress'
+      fullPath: '/grade-r-ready-updates/src/routes/progress'
+      preLoaderRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/report': {
+      id: '/_authenticated/grade-r-ready-updates/src/routes/_authenticated/report'
+      path: '/grade-r-ready-updates/src/routes/report'
+      fullPath: '/grade-r-ready-updates/src/routes/report'
+      preLoaderRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -231,6 +319,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute: typeof AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -240,6 +332,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProgressRoute: AuthenticatedProgressRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute:
+    AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedActivitiesRoute,
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute:
+    AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedChecklistRoute,
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute:
+    AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedProgressRoute,
+  AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute:
+    AuthenticatedGradeRReadyUpdatesSrcRoutesAuthenticatedReportRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
