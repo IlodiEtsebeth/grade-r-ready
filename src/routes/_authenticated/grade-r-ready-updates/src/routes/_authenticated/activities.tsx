@@ -4,7 +4,7 @@ import { AppShell, Card, ScreenHeader } from "@/components/app-shell";
 import { WEEKS, currentWeek } from "@/lib/content";
 import { useActivities, useChild, useSaveActivity } from "@/lib/child-data";
 
-export const Route = createFileRoute("/_authenticated/activities")({
+export const Route = createFileRoute("/_authenticated/grade-r-ready-updates/src/routes/_authenticated/activities")({
   head: () => ({
     meta: [
       { title: "This week's activities — Grade R Ready" },

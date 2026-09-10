@@ -10,7 +10,7 @@ import {
 } from "@/lib/content";
 import { useActivities, useChecklist, useChild } from "@/lib/child-data";
 
-export const Route = createFileRoute("/_authenticated/report")({
+export const Route = createFileRoute("/_authenticated/grade-r-ready-updates/src/routes/_authenticated/report")({
   head: () => ({
     meta: [
       { title: "Readiness report — Grade R Ready" },
