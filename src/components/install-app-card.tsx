@@ -2,15 +2,9 @@ import { useEffect, useState } from "react";
 
 const DISMISS_KEY = "grade-r-ready:install-dismissed";
 
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-};
-
 function isStandalone() {
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
-    // iOS Safari
     (navigator as unknown as { standalone?: boolean }).standalone === true
   );
 }
@@ -20,47 +14,20 @@ function isIos() {
 }
 
 export function InstallAppCard() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showIosHelp, setShowIosHelp] = useState(false);
   const [dismissed, setDismissed] = useState(true);
   const [installed, setInstalled] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setDismissed(localStorage.getItem(DISMISS_KEY) === "1");
     setInstalled(isStandalone());
-
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-
-    const onInstalled = () => setInstalled(true);
-    window.addEventListener("appinstalled", onInstalled);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
   }, []);
 
   if (installed || dismissed) return null;
-  if (!deferredPrompt && !isIos()) return null;
 
   function dismiss() {
     localStorage.setItem(DISMISS_KEY, "1");
     setDismissed(true);
-  }
-
-  async function install() {
-    if (!deferredPrompt) {
-      setShowIosHelp(true);
-      return;
-    }
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") setInstalled(true);
-    setDeferredPrompt(null);
   }
 
   return (
@@ -69,7 +36,7 @@ export function InstallAppCard() {
         <div>
           <p className="font-display text-[13px] font-bold">Add Grade R Ready to your phone</p>
           <p className="mt-1 text-[12px] text-muted-foreground">
-            Get it on your home screen like an app — one tap to open, no browser bar.
+            Get it on your home screen for quick, one-tap access.
           </p>
         </div>
         <button
@@ -81,18 +48,23 @@ export function InstallAppCard() {
         </button>
       </div>
 
-      {!showIosHelp ? (
+      {!expanded ? (
         <button
-          onClick={install}
+          onClick={() => setExpanded(true)}
           className="mt-3 w-full rounded-xl bg-foreground py-2.5 text-[13px] font-semibold text-background transition active:scale-[0.99]"
         >
-          Add to home screen
+          Show me how
         </button>
-      ) : (
+      ) : isIos() ? (
         <p className="mt-3 rounded-xl bg-background/60 px-3 py-2.5 text-[12px] leading-relaxed text-foreground">
           Tap the <span className="font-semibold">Share</span> button in Safari (the square with an
           arrow), then scroll down and tap{" "}
           <span className="font-semibold">"Add to Home Screen"</span>.
+        </p>
+      ) : (
+        <p className="mt-3 rounded-xl bg-background/60 px-3 py-2.5 text-[12px] leading-relaxed text-foreground">
+          Tap the <span className="font-semibold">⋮ menu</span> (top right of Chrome), then tap{" "}
+          <span className="font-semibold">"Add to Home screen"</span>.
         </p>
       )}
     </div>
