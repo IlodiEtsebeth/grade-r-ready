@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { PasswordInput } from "@/components/password-input";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -87,26 +88,22 @@ function ResetPassword() {
             <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
               <label className="flex flex-col gap-1.5">
                 <span className="text-[12px] font-semibold">New password</span>
-                <input
-                  type="password"
+                <PasswordInput
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={setPassword}
                   maxLength={72}
                   autoComplete="new-password"
                   placeholder="At least 6 characters"
-                  className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
                 />
               </label>
               <label className="flex flex-col gap-1.5">
                 <span className="text-[12px] font-semibold">Confirm new password</span>
-                <input
-                  type="password"
+                <PasswordInput
                   value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
+                  onChange={setConfirm}
                   maxLength={72}
                   autoComplete="new-password"
                   placeholder="Type it again"
-                  className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
                 />
               </label>
 

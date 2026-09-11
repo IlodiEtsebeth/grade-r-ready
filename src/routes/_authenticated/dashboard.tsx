@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AppShell, Card } from "@/components/app-shell";
+import { InstallAppCard } from "@/components/install-app-card";
 import {
   CATEGORIES,
   TOTAL_ITEMS,
@@ -19,7 +20,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { title: "My dashboard — Grade R Ready" },
       {
         name: "description",
-        content: "See your Grade R child's readiness summary, checklist progress and this week's activities.",
+        content:
+          "See your Grade R child's readiness summary, checklist progress and this week's activities.",
       },
       { property: "og:title", content: "My dashboard — Grade R Ready" },
       {
@@ -84,6 +86,8 @@ function Dashboard() {
           <span className="font-mono text-[11px] font-medium">{label}</span>
         </div>
       </header>
+
+      <InstallAppCard />
 
       <Card className="relative overflow-hidden">
         <div className="flex items-center justify-between gap-4">

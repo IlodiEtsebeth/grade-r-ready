@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { PasswordInput } from "@/components/password-input";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -33,6 +34,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -77,6 +79,10 @@ function AuthPage() {
     const parsed = schema.safeParse({ email, password, fullName });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details");
+      return;
+    }
+    if (mode === "signup" && password !== confirmPassword) {
+      setError("Those passwords don't match.");
       return;
     }
     setBusy(true);
@@ -165,14 +171,24 @@ function AuthPage() {
             {mode !== "forgot" && (
               <label className="flex flex-col gap-1.5">
                 <span className="text-[12px] font-semibold">Password</span>
-                <input
-                  type="password"
+                <PasswordInput
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={setPassword}
                   maxLength={72}
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                   placeholder="At least 6 characters"
-                  className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
+                />
+              </label>
+            )}
+            {mode === "signup" && (
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[12px] font-semibold">Confirm password</span>
+                <PasswordInput
+                  value={confirmPassword}
+                  onChange={setConfirmPassword}
+                  maxLength={72}
+                  autoComplete="new-password"
+                  placeholder="Type it again"
                 />
               </label>
             )}
@@ -234,6 +250,7 @@ function AuthPage() {
                 setMode(mode === "signup" ? "signin" : "signup");
                 setError(null);
                 setInfo(null);
+                setConfirmPassword("");
               }}
               className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
             >

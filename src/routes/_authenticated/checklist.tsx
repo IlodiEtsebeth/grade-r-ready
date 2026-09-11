@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell, Card, ScreenHeader } from "@/components/app-shell";
 import { PhotoAttach } from "@/components/photo-attach";
-import { CATEGORIES, STATUS_LABEL, type ChecklistStatus } from "@/lib/content";
+import { CATEGORIES, type ChecklistStatus } from "@/lib/content";
 import { useChecklist, useChild, useSaveChecklistItem } from "@/lib/child-data";
 
 const searchSchema = z.object({
@@ -29,10 +29,11 @@ export const Route = createFileRoute("/_authenticated/checklist")({
   component: Checklist,
 });
 
-const NEXT_STATUS: Record<ChecklistStatus, ChecklistStatus> = {
-  not_started: "developing",
-  developing: "mastered",
-  mastered: "not_started",
+const STATUS_ORDER: ChecklistStatus[] = ["not_started", "developing", "mastered"];
+const SHORT_LABEL: Record<ChecklistStatus, string> = {
+  not_started: "Not yet",
+  developing: "Developing",
+  mastered: "Mastered",
 };
 
 function Checklist() {
@@ -59,9 +60,8 @@ function Checklist() {
 
   const categories = categoryParam ? CATEGORIES.filter((c) => c.id === categoryParam) : CATEGORIES;
 
-  function cycleStatus(itemId: string) {
-    const current = statuses[itemId] ?? "not_started";
-    saveItem.mutate({ itemId, status: NEXT_STATUS[current] });
+  function setStatus(itemId: string, status: ChecklistStatus) {
+    saveItem.mutate({ itemId, status });
   }
 
   function openNote(itemId: string) {
@@ -91,8 +91,7 @@ function Checklist() {
       )}
 
       <p className="px-1 text-[12px] text-muted-foreground">
-        Tap a skill to move it from Not started → Developing → Mastered. Tap the note icon to add a
-        quick note.
+        Tap Not yet, Developing or Mastered for each skill. Tap the note icon to add a quick note.
       </p>
 
       <div className="flex flex-col gap-4">
@@ -110,32 +109,12 @@ function Checklist() {
                 return (
                   <div key={item.id} className="rounded-2xl bg-background/60 p-3 ring-1 ring-line">
                     <div className="flex items-start justify-between gap-3">
-                      <button
-                        onClick={() => cycleStatus(item.id)}
-                        className="flex min-w-0 flex-1 items-start gap-2.5 text-left"
-                      >
-                        <span
-                          className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full ring-1 ${
-                            status === "mastered"
-                              ? `bg-${category.tone} ring-${category.tone}`
-                              : status === "developing"
-                                ? `bg-${category.tone}-soft ring-${category.tone}`
-                                : "bg-transparent ring-line"
-                          }`}
-                        >
-                          {status === "mastered" && (
-                            <span className="text-[10px] font-bold text-background">✓</span>
-                          )}
+                      <span className="min-w-0">
+                        <span className="block text-[13px] font-medium leading-snug">
+                          {item.label}
                         </span>
-                        <span className="min-w-0">
-                          <span className="block text-[13px] font-medium leading-snug">
-                            {item.label}
-                          </span>
-                          <span className="block text-[11px] text-muted-foreground">
-                            {item.hint}
-                          </span>
-                        </span>
-                      </button>
+                        <span className="block text-[11px] text-muted-foreground">{item.hint}</span>
+                      </span>
                       <button
                         onClick={() => openNote(item.id)}
                         className={`shrink-0 rounded-full px-2 py-1 font-mono text-[10px] ${
@@ -148,24 +127,34 @@ function Checklist() {
                       </button>
                     </div>
 
-                    <div className="mt-2 flex items-center justify-between">
-                      <span
-                        className={`font-mono text-[10px] uppercase tracking-[0.1em] ${
-                          status === "mastered"
-                            ? "text-aloe"
-                            : status === "developing"
-                              ? "text-ochre"
-                              : "text-muted-foreground"
-                        }`}
-                      >
-                        {STATUS_LABEL[status]}
-                      </span>
-                      {hasNote && openNoteFor !== item.id && (
-                        <span className="truncate pl-3 text-[11px] text-muted-foreground italic">
-                          “{notes[item.id]}”
-                        </span>
-                      )}
+                    <div className="mt-2.5 grid grid-cols-3 gap-1.5">
+                      {STATUS_ORDER.map((s) => {
+                        const active = status === s;
+                        return (
+                          <button
+                            key={s}
+                            onClick={() => setStatus(item.id, s)}
+                            className={`rounded-lg py-2 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.03em] transition ${
+                              active
+                                ? s === "mastered"
+                                  ? `bg-${category.tone} text-background`
+                                  : s === "developing"
+                                    ? `bg-${category.tone}-soft text-foreground ring-1 ring-${category.tone}`
+                                    : "bg-foreground text-background"
+                                : "bg-surface/70 text-muted-foreground ring-1 ring-line"
+                            }`}
+                          >
+                            {SHORT_LABEL[s]}
+                          </button>
+                        );
+                      })}
                     </div>
+
+                    {hasNote && openNoteFor !== item.id && (
+                      <p className="mt-2 truncate text-[11px] text-muted-foreground italic">
+                        “{notes[item.id]}”
+                      </p>
+                    )}
 
                     {openNoteFor === item.id && (
                       <div className="mt-2.5 flex flex-col gap-2">
