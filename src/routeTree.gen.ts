@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PendingRouteImport } from './routes/pending'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
 import { Route as AuthenticatedChecklistRouteImport } from './routes/_authenticated/checklist'
@@ -32,6 +33,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -73,6 +79,7 @@ const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/pending': typeof PendingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/activities': typeof AuthenticatedActivitiesRoute
   '/checklist': typeof AuthenticatedChecklistRoute
@@ -84,6 +91,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/pending': typeof PendingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/activities': typeof AuthenticatedActivitiesRoute
   '/checklist': typeof AuthenticatedChecklistRoute
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/pending': typeof PendingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/activities': typeof AuthenticatedActivitiesRoute
   '/_authenticated/checklist': typeof AuthenticatedChecklistRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/pending'
     | '/reset-password'
     | '/activities'
     | '/checklist'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/pending'
     | '/reset-password'
     | '/activities'
     | '/checklist'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/pending'
     | '/reset-password'
     | '/_authenticated/activities'
     | '/_authenticated/checklist'
@@ -146,6 +158,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PendingRoute: typeof PendingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
@@ -170,6 +183,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pending': {
+      id: '/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof PendingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -249,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PendingRoute: PendingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport

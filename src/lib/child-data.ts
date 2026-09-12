@@ -32,6 +32,25 @@ async function requireUserId() {
   return data.user.id;
 }
 
+export type AccessStatus = "pending" | "approved" | "removed";
+
+export function useAccessStatus() {
+  return useQuery({
+    queryKey: ["access-status"],
+    queryFn: async (): Promise<AccessStatus> => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return "pending";
+      const { data, error } = await supabase
+        .from("account_access")
+        .select("status")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.status as AccessStatus) ?? "pending";
+    },
+  });
+}
+
 export function useChild() {
   return useQuery({
     queryKey: ["child"],

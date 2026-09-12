@@ -144,6 +144,24 @@ export type Database = {
         }
         Relationships: []
       }
+      account_access: {
+        Row: {
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
