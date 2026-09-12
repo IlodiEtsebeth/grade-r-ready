@@ -4,7 +4,13 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { PasswordInput } from "@/components/password-input";
 
+const searchSchema = z.object({
+  mode: z.enum(["signin", "signup"]).optional(),
+  confirmed: z.union([z.literal("1"), z.literal(1)]).optional(),
+});
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
       { title: "Sign in — Grade R Ready" },
@@ -30,14 +36,17 @@ const schema = z.object({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
+  const { mode: modeParam, confirmed } = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">(modeParam ?? "signup");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(
+    confirmed ? "Your email is confirmed! Enter your password to sign in." : null,
+  );
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -92,7 +101,7 @@ function AuthPage() {
           email: parsed.data.email,
           password: parsed.data.password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/auth?mode=signin&confirmed=1`,
             data: { full_name: parsed.data.fullName ?? "" },
           },
         });

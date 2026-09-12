@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import logoIcon from "@/assets/logo-icon-only.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,9 +31,7 @@ function Landing() {
 
         <div className="relative z-10 flex flex-1 flex-col">
           <div className="flex items-center gap-2.5">
-            <div className="grid size-10 place-items-center rounded-2xl bg-sungold shadow-sm shadow-sungold/30">
-              <span className="font-display text-lg font-extrabold text-foreground">R</span>
-            </div>
+            <img src={logoIcon} alt="Piece of Play" className="size-11 shrink-0 object-contain" />
             <div>
               <p className="font-display text-[15px] font-bold leading-none">Grade R Ready</p>
               <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">

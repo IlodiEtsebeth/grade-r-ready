@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import logoIcon from "@/assets/logo-icon-only.png";
 
 const NAV = [
   { to: "/dashboard", label: "Home" },
@@ -19,7 +20,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="pointer-events-none absolute top-40 -right-16 h-64 w-64 rounded-full bg-aloe/30 blur-3xl" />
         <div className="pointer-events-none absolute bottom-40 -left-10 h-56 w-56 rounded-full bg-ochre/30 blur-3xl" />
 
-        <div className="relative z-10 flex flex-1 flex-col gap-4 px-4 pt-5 pb-28">{children}</div>
+        <div className="relative z-10 flex flex-1 flex-col gap-4 px-4 pt-5 pb-28">
+          <div className="flex items-center gap-2">
+            <img src={logoIcon} alt="" className="size-7 shrink-0 object-contain" />
+            <span className="font-display text-[12px] font-bold tracking-tight text-muted-foreground">
+              Grade R Ready
+            </span>
+          </div>
+          {children}
+        </div>
 
         <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[440px] -translate-x-1/2 border-t border-line bg-surface/80 px-4 pt-2.5 pb-5 backdrop-blur-xl print:hidden">
           <div className="flex items-center justify-between">
