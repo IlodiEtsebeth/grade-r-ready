@@ -146,16 +146,19 @@ export type Database = {
       }
       account_access: {
         Row: {
+          email: string | null
           id: string
           status: string
           updated_at: string
         }
         Insert: {
+          email?: string | null
           id: string
           status?: string
           updated_at?: string
         }
         Update: {
+          email?: string | null
           id?: string
           status?: string
           updated_at?: string
