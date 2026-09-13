@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useChild, useSaveChild } from "@/lib/child-data";
@@ -59,6 +59,14 @@ function Setup() {
       <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col overflow-hidden px-5 pt-8 pb-10">
         <div className="pointer-events-none absolute -top-8 -left-12 h-72 w-72 rounded-full bg-sungold/40 blur-3xl" />
         <div className="relative z-10">
+          {child && (
+            <Link
+              to="/dashboard"
+              className="mb-4 inline-block text-[13px] font-semibold text-ochre"
+            >
+              ‹ Back to dashboard
+            </Link>
+          )}
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">
             Child profile
           </p>
