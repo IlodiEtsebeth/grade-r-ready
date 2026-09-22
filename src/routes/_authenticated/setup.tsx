@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useChild, useSaveChild } from "@/lib/child-data";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/_authenticated/setup")({
   head: () => ({
@@ -15,20 +17,19 @@ export const Route = createFileRoute("/_authenticated/setup")({
   component: Setup,
 });
 
-const schema = z.object({
-  name: z.string().trim().min(1, "Please add your child's name").max(60),
-  age: z.number().int().min(4, "Grade R learners are usually 5 or 6").max(7),
-  school: z.string().trim().max(100),
-});
-
 function Setup() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { data: child } = useChild();
   const save = useSaveChild();
   const [name, setName] = useState("");
   const [age, setAge] = useState("5");
   const [school, setSchool] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = t("title.setup", lang);
+  }, [lang]);
 
   useEffect(() => {
     if (child) {
@@ -38,19 +39,25 @@ function Setup() {
     }
   }, [child]);
 
+  const schema = z.object({
+    name: z.string().trim().min(1, t("setup.validation.name", lang)).max(60),
+    age: z.number().int().min(4, t("setup.validation.age", lang)).max(7),
+    school: z.string().trim().max(100),
+  });
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     const parsed = schema.safeParse({ name, age: Number(age), school });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Please check the details");
+      setError(parsed.error.issues[0]?.message ?? t("auth.validation.generic", lang));
       return;
     }
     try {
       await save.mutateAsync(child?.id ? { id: child.id, ...parsed.data } : { ...parsed.data });
       navigate({ to: "/dashboard", replace: true });
     } catch {
-      setError("We couldn't save that. Please try again.");
+      setError(t("setup.error", lang));
     }
   }
 
@@ -64,50 +71,48 @@ function Setup() {
               to="/dashboard"
               className="mb-4 inline-block text-[13px] font-semibold text-ochre"
             >
-              ‹ Back to dashboard
+              {t("setup.backToDashboard", lang)}
             </Link>
           )}
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">
-            Child profile
+            {t("setup.eyebrow", lang)}
           </p>
           <h1 className="mt-2 font-display text-2xl font-extrabold tracking-tight text-balance">
-            {child ? "Update your child's details" : "Tell us about your Grade R child"}
+            {child ? t("setup.heading.edit", lang) : t("setup.heading.new", lang)}
           </h1>
-          <p className="mt-2 text-[13px] text-muted-foreground">
-            Just three quick things so the checklist feels personal.
-          </p>
+          <p className="mt-2 text-[13px] text-muted-foreground">{t("setup.subtext", lang)}</p>
 
           <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold">Child's first name</span>
+              <span className="text-[12px] font-semibold">{t("setup.label.name", lang)}</span>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={60}
-                placeholder="e.g. Thando"
+                placeholder={t("setup.placeholder.name", lang)}
                 className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
               />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold">Age</span>
+              <span className="text-[12px] font-semibold">{t("setup.label.age", lang)}</span>
               <select
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
               >
-                <option value="4">4 years</option>
-                <option value="5">5 years</option>
-                <option value="6">6 years</option>
-                <option value="7">7 years</option>
+                <option value="4">{t("setup.age4", lang)}</option>
+                <option value="5">{t("setup.age5", lang)}</option>
+                <option value="6">{t("setup.age6", lang)}</option>
+                <option value="7">{t("setup.age7", lang)}</option>
               </select>
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold">School or crèche (optional)</span>
+              <span className="text-[12px] font-semibold">{t("setup.label.school", lang)}</span>
               <input
                 value={school}
                 onChange={(e) => setSchool(e.target.value)}
                 maxLength={100}
-                placeholder="e.g. Sunnyside Primary"
+                placeholder={t("setup.placeholder.school", lang)}
                 className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
               />
             </label>
@@ -123,7 +128,7 @@ function Setup() {
               disabled={save.isPending}
               className="mt-2 rounded-xl bg-foreground py-3.5 text-[14px] font-semibold text-background transition active:scale-[0.99] disabled:opacity-60"
             >
-              {save.isPending ? "Saving…" : "Continue to my dashboard"}
+              {save.isPending ? t("setup.button.saving", lang) : t("setup.button.continue", lang)}
             </button>
           </form>
         </div>

@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccessStatus } from "@/lib/child-data";
 import logoIcon from "@/assets/logo-icon-only.png";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/pending")({
   ssr: false,
@@ -17,7 +19,12 @@ export const Route = createFileRoute("/pending")({
 
 function Pending() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { data: status, isLoading } = useAccessStatus();
+
+  useEffect(() => {
+    document.title = t("title.pending", lang);
+  }, [lang]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -44,25 +51,23 @@ function Pending() {
           <img src={logoIcon} alt="Piece of Play" className="mx-auto size-16 object-contain" />
 
           {isLoading ? (
-            <p className="mt-6 text-[13px] text-muted-foreground">Checking your account…</p>
+            <p className="mt-6 text-[13px] text-muted-foreground">{t("pending.checking", lang)}</p>
           ) : status === "removed" ? (
             <>
               <h1 className="mt-6 font-display text-xl font-extrabold tracking-tight text-balance">
-                Access removed
+                {t("pending.removed.heading", lang)}
               </h1>
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-                Your access to Grade R Ready has been removed. If you think this is a mistake,
-                please contact Piece of Play directly.
+                {t("pending.removed.body", lang)}
               </p>
             </>
           ) : (
             <>
               <h1 className="mt-6 font-display text-xl font-extrabold tracking-tight text-balance">
-                You're on the list!
+                {t("pending.waiting.heading", lang)}
               </h1>
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-                Your account is being reviewed. This is usually quick — you'll get access as soon as
-                it's confirmed, no need to sign up again.
+                {t("pending.waiting.body", lang)}
               </p>
             </>
           )}
@@ -71,7 +76,7 @@ function Pending() {
             onClick={signOut}
             className="mt-8 rounded-xl bg-surface/70 px-5 py-2.5 text-[13px] font-semibold text-muted-foreground ring-1 ring-line"
           >
-            Sign out
+            {t("pending.signOut", lang)}
           </button>
         </div>
       </div>

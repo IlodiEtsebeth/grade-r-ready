@@ -7,12 +7,14 @@ import {
   TOTAL_ITEMS,
   WEEKS,
   currentWeek,
-  readinessLabel,
+  readinessKey,
   readinessScore,
   type ChecklistStatus,
 } from "@/lib/content";
 import { useActivities, useChecklist, useChild } from "@/lib/child-data";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -33,11 +35,22 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
+const READINESS_KEY_TO_STRING = {
+  ready: "readiness.ready",
+  developing: "readiness.developing",
+  needs_support: "readiness.needsSupport",
+} as const;
+
 function Dashboard() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { data: child, isLoading } = useChild();
   const { data: checklist } = useChecklist(child?.id);
   const { data: activityRows } = useActivities(child?.id);
+
+  useEffect(() => {
+    document.title = t("title.dashboard", lang);
+  }, [lang]);
 
   useEffect(() => {
     if (!isLoading && !child) navigate({ to: "/setup", replace: true });
@@ -47,7 +60,8 @@ function Dashboard() {
   for (const row of checklist ?? []) statuses[row.item_id] = row.status;
 
   const score = readinessScore(statuses);
-  const label = readinessLabel(score);
+  const rKey = readinessKey(score);
+  const label = t(READINESS_KEY_TO_STRING[rKey], lang);
   const mastered = Object.values(statuses).filter((s) => s === "mastered").length;
   const developing = Object.values(statuses).filter((s) => s === "developing").length;
 
@@ -58,6 +72,14 @@ function Dashboard() {
 
   const dash = 283;
   const offset = dash - (dash * score) / 100;
+
+  const childName = child?.name ?? t("dashboard.fallbackName", lang);
+  const heading =
+    rKey === "ready"
+      ? t("dashboard.headingReady", lang, { name: childName })
+      : rKey === "developing"
+        ? t("dashboard.headingDeveloping", lang, { name: childName })
+        : t("dashboard.headingNeedsSupport", lang, { name: childName });
 
   return (
     <AppShell>
@@ -71,11 +93,11 @@ function Dashboard() {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <p className="truncate font-display text-[15px] font-bold leading-none">
-                {child?.name ?? "Your child"}
+                {childName}
               </p>
               <Link
                 to="/setup"
-                aria-label="Edit child's details"
+                aria-label={t("dashboard.editAria", lang)}
                 className="shrink-0 rounded-full p-1 text-muted-foreground"
               >
                 <svg
@@ -93,14 +115,14 @@ function Dashboard() {
               </Link>
             </div>
             <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-              Grade R · {child?.age ?? 5} years
+              {t("dashboard.gradeAge", lang, { age: child?.age ?? 5 })}
             </p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2 rounded-full bg-surface/70 px-3 py-1.5 ring-1 ring-line backdrop-blur-md">
           <span
             className={`size-2 rounded-full ${
-              label === "Ready" ? "bg-aloe" : label === "Developing" ? "bg-sungold" : "bg-ochre"
+              rKey === "ready" ? "bg-aloe" : rKey === "developing" ? "bg-sungold" : "bg-ochre"
             }`}
           />
           <span className="font-mono text-[11px] font-medium">{label}</span>
@@ -113,17 +135,13 @@ function Dashboard() {
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">
-              Readiness check
+              {t("dashboard.eyebrow", lang)}
             </p>
             <h1 className="mt-2 font-display text-2xl font-extrabold leading-tight tracking-tight text-balance">
-              {label === "Ready"
-                ? `${child?.name ?? "Your child"} is on track for Grade 1`
-                : label === "Developing"
-                  ? `${child?.name ?? "Your child"} is getting there`
-                  : `${child?.name ?? "Your child"} needs a bit more practice`}
+              {heading}
             </h1>
             <p className="mt-1.5 text-[13px] text-muted-foreground">
-              {mastered} of {TOTAL_ITEMS} skills mastered so far.
+              {t("dashboard.masteredCount", lang, { mastered, total: TOTAL_ITEMS })}
             </p>
           </div>
           <div className="relative grid size-24 shrink-0 place-items-center">
@@ -157,10 +175,12 @@ function Dashboard() {
               <span className="grid size-6 shrink-0 place-items-center rounded-full bg-sungold font-display text-[10px] font-bold">
                 {week}
               </span>
-              <span className="truncate text-[13px] font-semibold">This week at home</span>
+              <span className="truncate text-[13px] font-semibold">
+                {t("dashboard.thisWeek", lang)}
+              </span>
             </div>
             <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
-              {weekDone}/{weekPlan.activities.length} done
+              {t("dashboard.weekDone", lang, { done: weekDone, total: weekPlan.activities.length })}
             </span>
           </div>
           <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-surface/70">
@@ -173,15 +193,15 @@ function Dashboard() {
             to="/activities"
             className="mt-3 block w-full rounded-xl bg-foreground py-2.5 text-center text-[13px] font-semibold text-background transition active:scale-[0.99]"
           >
-            Open this week's activities
+            {t("dashboard.openActivities", lang)}
           </Link>
         </div>
       </Card>
 
       <div className="flex items-center justify-between px-1">
-        <p className="font-display text-[15px] font-bold">Checklist</p>
+        <p className="font-display text-[15px] font-bold">{t("dashboard.checklistTitle", lang)}</p>
         <span className="font-mono text-[11px] text-muted-foreground">
-          {mastered} mastered · {developing} developing
+          {t("dashboard.masteredDeveloping", lang, { mastered, developing })}
         </span>
       </div>
 
@@ -203,10 +223,10 @@ function Dashboard() {
                 </span>
                 <div className="min-w-0">
                   <p className="truncate font-display text-[14px] font-bold leading-tight">
-                    {category.name}
+                    {category.name[lang]}
                   </p>
                   <p className="font-mono text-[10px] text-muted-foreground">
-                    {done} of {category.items.length} mastered
+                    {t("dashboard.categoryCount", lang, { done, total: category.items.length })}
                   </p>
                 </div>
               </div>
@@ -223,7 +243,7 @@ function Dashboard() {
         }}
         className="mt-2 rounded-xl bg-surface/70 py-3 text-[13px] font-semibold text-muted-foreground ring-1 ring-line"
       >
-        Sign out
+        {t("dashboard.signOut", lang)}
       </button>
     </AppShell>
   );

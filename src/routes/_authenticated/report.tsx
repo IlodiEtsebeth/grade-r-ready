@@ -7,11 +7,13 @@ import {
   TOTAL_ITEMS,
   WEEKS,
   currentWeek,
-  readinessLabel,
+  readinessKey,
   readinessScore,
   type ChecklistStatus,
 } from "@/lib/content";
 import { useActivities, useChecklist, useChild } from "@/lib/child-data";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/_authenticated/report")({
   head: () => ({
@@ -34,11 +36,28 @@ export const Route = createFileRoute("/_authenticated/report")({
   component: ReportPage,
 });
 
+const READINESS_KEY_TO_STRING = {
+  ready: "readiness.ready",
+  developing: "readiness.developing",
+  needs_support: "readiness.needsSupport",
+} as const;
+
+const SUMMARY_KEY = {
+  ready: "report.summary.ready",
+  developing: "report.summary.developing",
+  needs_support: "report.summary.needsSupport",
+} as const;
+
 function ReportPage() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { data: child, isLoading } = useChild();
   const { data: checklist } = useChecklist(child?.id);
   const { data: activityRows } = useActivities(child?.id);
+
+  useEffect(() => {
+    document.title = t("title.report", lang);
+  }, [lang]);
 
   useEffect(() => {
     if (!isLoading && !child) navigate({ to: "/setup", replace: true });
@@ -50,12 +69,13 @@ function ReportPage() {
     statuses[row.item_id] = row.status;
     if (row.note?.trim()) {
       const item = CATEGORIES.flatMap((c) => c.items).find((i) => i.id === row.item_id);
-      notes.push({ label: item?.label ?? "Skill", note: row.note.trim() });
+      notes.push({ label: item?.label[lang] ?? "Skill", note: row.note.trim() });
     }
   }
 
   const score = readinessScore(statuses);
-  const label = readinessLabel(score);
+  const rKey = readinessKey(score);
+  const label = t(READINESS_KEY_TO_STRING[rKey], lang);
   const mastered = Object.values(statuses).filter((s) => s === "mastered").length;
   const developing = Object.values(statuses).filter((s) => s === "developing").length;
   const doneIds = new Set((activityRows ?? []).filter((a) => a.done).map((a) => a.activity_id));
@@ -65,14 +85,10 @@ function ReportPage() {
   const strengths = allItems.filter((i) => statuses[i.id] === "mastered").slice(0, 6);
   const practise = allItems.filter((i) => statuses[i.id] !== "mastered").slice(0, 6);
 
-  const summary =
-    label === "Ready"
-      ? `${child?.name ?? "Your child"} is showing the skills expected before Grade 1. Keep the routines going and enjoy the last stretch of Grade R.`
-      : label === "Developing"
-        ? `${child?.name ?? "Your child"} is making good progress. A few skills still need regular practice before Grade 1 starts.`
-        : `${child?.name ?? "Your child"} needs more support in several areas. Short daily practice at home will make a big difference before Grade 1.`;
+  const childName = child?.name ?? t("dashboard.fallbackName", lang);
+  const summary = t(SUMMARY_KEY[rKey], lang, { name: childName });
 
-  const today = new Date().toLocaleDateString("en-ZA", {
+  const today = new Date().toLocaleDateString(lang === "af" ? "af-ZA" : "en-ZA", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -81,14 +97,14 @@ function ReportPage() {
   return (
     <AppShell>
       <ScreenHeader
-        eyebrow="Readiness report"
-        title="Ready for Grade 1?"
+        eyebrow={t("report.eyebrow", lang)}
+        title={t("report.title", lang)}
         right={
           <button
             onClick={() => window.print()}
             className="shrink-0 rounded-full bg-foreground px-4 py-2 text-[12px] font-semibold text-background transition active:scale-95 print:hidden"
           >
-            Download
+            {t("report.download", lang)}
           </button>
         }
       />
@@ -96,20 +112,23 @@ function ReportPage() {
       <div id="report" className="flex flex-col gap-4">
         <Card>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">
-            Grade 1 readiness summary
+            {t("report.summaryLabel", lang)}
           </p>
           <h2 className="mt-2 font-display text-2xl font-extrabold leading-tight tracking-tight text-balance">
-            {child?.name ?? "Your child"}
+            {childName}
           </h2>
           <p className="mt-1 font-mono text-[11px] text-muted-foreground">
-            Grade R · {child?.age ?? 5} years
-            {child?.school ? ` · ${child.school}` : ""} · Report date {today}
+            {t("report.metaLine", lang, {
+              age: child?.age ?? 5,
+              school: child?.school ? ` · ${child.school}` : "",
+              date: today,
+            })}
           </p>
 
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-sungold-soft/70 p-4">
             <span
               className={`grid size-14 shrink-0 place-items-center rounded-2xl font-display text-lg font-extrabold ${
-                label === "Ready" ? "bg-aloe" : label === "Developing" ? "bg-sungold" : "bg-ochre"
+                rKey === "ready" ? "bg-aloe" : rKey === "developing" ? "bg-sungold" : "bg-ochre"
               }`}
             >
               {score}%
@@ -117,7 +136,7 @@ function ReportPage() {
             <div className="min-w-0">
               <p className="font-display text-[15px] font-bold">{label}</p>
               <p className="mt-0.5 text-[12px] text-muted-foreground">
-                {mastered} of {TOTAL_ITEMS} skills mastered · {developing} developing
+                {t("report.statLine", lang, { mastered, total: TOTAL_ITEMS, developing })}
               </p>
             </div>
           </div>
@@ -126,17 +145,18 @@ function ReportPage() {
         </Card>
 
         <Card>
-          <p className="font-display text-[15px] font-bold">Skill areas</p>
+          <p className="font-display text-[15px] font-bold">{t("report.skillAreas", lang)}</p>
           <div className="mt-3 flex flex-col gap-2.5">
             {CATEGORIES.map((c) => {
               const done = c.items.filter((i) => statuses[i.id] === "mastered").length;
               const dev = c.items.filter((i) => statuses[i.id] === "developing").length;
               const pct = Math.round(((done + dev * 0.5) / c.items.length) * 100);
+              const catReadinessKey = readinessKey(pct);
               return (
                 <div key={c.id} className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[13px]">{c.name}</p>
+                  <p className="truncate text-[13px]">{c.name[lang]}</p>
                   <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
-                    {done}/{c.items.length} · {readinessLabel(pct)}
+                    {done}/{c.items.length} · {t(READINESS_KEY_TO_STRING[catReadinessKey], lang)}
                   </span>
                 </div>
               );
@@ -145,17 +165,19 @@ function ReportPage() {
         </Card>
 
         <Card>
-          <p className="font-display text-[15px] font-bold">What {child?.name ?? "your child"} can already do</p>
+          <p className="font-display text-[15px] font-bold">
+            {t("report.strengthsTitle", lang, { name: childName })}
+          </p>
           {strengths.length === 0 ? (
             <p className="mt-2 text-[13px] text-muted-foreground">
-              Complete the checklist to see strengths here.
+              {t("report.strengthsEmpty", lang)}
             </p>
           ) : (
             <ul className="mt-3 flex flex-col gap-2">
               {strengths.map((s) => (
                 <li key={s.id} className="flex items-start gap-2 text-[13px]">
                   <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-aloe" />
-                  <span>{s.label}</span>
+                  <span>{s.label[lang]}</span>
                 </li>
               ))}
             </ul>
@@ -163,10 +185,10 @@ function ReportPage() {
         </Card>
 
         <Card>
-          <p className="font-display text-[15px] font-bold">What still needs practice</p>
+          <p className="font-display text-[15px] font-bold">{t("report.practiseTitle", lang)}</p>
           {practise.length === 0 ? (
             <p className="mt-2 text-[13px] text-muted-foreground">
-              Everything on the checklist is mastered. Wonderful work.
+              {t("report.practiseEmpty", lang)}
             </p>
           ) : (
             <ul className="mt-3 flex flex-col gap-2">
@@ -174,8 +196,8 @@ function ReportPage() {
                 <li key={s.id} className="flex items-start gap-2 text-[13px]">
                   <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-ochre" />
                   <span>
-                    {s.label}
-                    <span className="text-muted-foreground"> — {s.cat}</span>
+                    {s.label[lang]}
+                    <span className="text-muted-foreground"> — {s.cat[lang]}</span>
                   </span>
                 </li>
               ))}
@@ -184,16 +206,20 @@ function ReportPage() {
         </Card>
 
         <Card>
-          <p className="font-display text-[15px] font-bold">Home activities</p>
+          <p className="font-display text-[15px] font-bold">{t("report.homeActivities", lang)}</p>
           <p className="mt-2 text-[13px] text-muted-foreground">
-            {doneIds.size} of {TOTAL_ACTIVITIES} activities completed, currently in week {week} of{" "}
-            {WEEKS.length}.
+            {t("report.activitiesLine", lang, {
+              done: doneIds.size,
+              total: TOTAL_ACTIVITIES,
+              week,
+              weeks: WEEKS.length,
+            })}
           </p>
         </Card>
 
         {notes.length > 0 && (
           <Card>
-            <p className="font-display text-[15px] font-bold">Your notes</p>
+            <p className="font-display text-[15px] font-bold">{t("report.notesTitle", lang)}</p>
             <div className="mt-3 flex flex-col gap-3">
               {notes.slice(0, 8).map((n, i) => (
                 <div key={i}>
@@ -206,15 +232,15 @@ function ReportPage() {
         )}
 
         <Card>
-          <p className="font-display text-[15px] font-bold">Next steps</p>
+          <p className="font-display text-[15px] font-bold">{t("report.nextSteps", lang)}</p>
           <ul className="mt-3 flex flex-col gap-2 text-[13px]">
-            <li>Do the weekly activities together, about 10 to 15 minutes a day.</li>
-            <li>Focus on the skills listed under "still needs practice".</li>
-            <li>Update the checklist every few weeks so the report stays accurate.</li>
-            <li>Share this report with your child's teacher if you have questions.</li>
+            <li>{t("report.step1", lang)}</li>
+            <li>{t("report.step2", lang)}</li>
+            <li>{t("report.step3", lang)}</li>
+            <li>{t("report.step4", lang)}</li>
           </ul>
           <p className="mt-4 font-mono text-[10px] leading-relaxed text-muted-foreground">
-            This is a parent guide, not a formal school assessment.
+            {t("report.disclaimer", lang)}
           </p>
         </Card>
       </div>
@@ -223,7 +249,7 @@ function ReportPage() {
         onClick={() => window.print()}
         className="rounded-xl bg-foreground py-3 text-[13px] font-semibold text-background transition active:scale-[0.99] print:hidden"
       >
-        Download or print this report
+        {t("report.downloadOrPrint", lang)}
       </button>
     </AppShell>
   );

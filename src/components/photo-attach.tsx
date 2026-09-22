@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
-import { photoUrl, uploadPhoto, usePhotoUrl } from "@/lib/child-data";
+import { uploadPhoto, usePhotoUrl } from "@/lib/child-data";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
+
+const MAX_BYTES = 8 * 1024 * 1024;
 
 export function PhotoAttach({
   photoPath,
@@ -10,6 +14,7 @@ export function PhotoAttach({
   onUploaded: (path: string) => void;
   className?: string;
 }) {
+  const { lang } = useLanguage();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,21 +22,19 @@ export function PhotoAttach({
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) {
-      setError("That photo is a bit large — try one under 8MB.");
+    setError(null);
+    if (file.size > MAX_BYTES) {
+      setError(t("photo.tooLarge", lang));
       return;
     }
-    setError(null);
     setBusy(true);
     try {
       const path = await uploadPhoto(file);
-      await photoUrl(path); // warm the signed url before we hand the path off
       onUploaded(path);
     } catch {
-      setError("Couldn't upload that photo. Please try again.");
+      setError(t("photo.uploadFailed", lang));
     } finally {
       setBusy(false);
-      if (inputRef.current) inputRef.current.value = "";
     }
   }
 
@@ -49,20 +52,24 @@ export function PhotoAttach({
         {url && (
           <img
             src={url}
-            alt="Uploaded"
-            className="size-8 shrink-0 rounded-lg object-cover ring-1 ring-line"
+            alt=""
+            className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-line"
           />
         )}
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
-          className="shrink-0 rounded-full bg-surface/70 px-2.5 py-1 font-mono text-[10px] text-muted-foreground ring-1 ring-line disabled:opacity-60"
+          className="rounded-full bg-surface/70 px-2.5 py-1 font-mono text-[10px] text-muted-foreground ring-1 ring-line disabled:opacity-60"
         >
-          {busy ? "uploading…" : photoPath ? "replace photo" : "+ photo"}
+          {busy
+            ? t("photo.uploading", lang)
+            : url
+              ? t("photo.replace", lang)
+              : t("photo.add", lang)}
         </button>
       </div>
-      {error && <p className="mt-1 text-[10px] text-ochre">{error}</p>}
+      {error && <p className="mt-1 text-[11px] text-ochre">{error}</p>}
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { PasswordInput } from "@/components/password-input";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -15,18 +17,23 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
 });
 
-const schema = z.object({
-  password: z.string().min(6, "Password must be at least 6 characters").max(72),
-});
-
 function ResetPassword() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    document.title = t("title.resetPw", lang);
+  }, [lang]);
+
+  const schema = z.object({
+    password: z.string().min(6, t("auth.validation.password", lang)).max(72),
+  });
 
   useEffect(() => {
     // Supabase turns the recovery link's token into a session automatically on load.
@@ -43,12 +50,12 @@ function ResetPassword() {
     e.preventDefault();
     setError(null);
     if (password !== confirm) {
-      setError("Those passwords don't match.");
+      setError(t("auth.validation.passwordMismatch", lang));
       return;
     }
     const parsed = schema.safeParse({ password });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Please check your password");
+      setError(parsed.error.issues[0]?.message ?? t("auth.validation.generic", lang));
       return;
     }
     setBusy(true);
@@ -58,7 +65,7 @@ function ResetPassword() {
       setDone(true);
       setTimeout(() => navigate({ to: "/dashboard", replace: true }), 1200);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(err instanceof Error ? err.message : t("auth.error.generic", lang));
     } finally {
       setBusy(false);
     }
@@ -71,14 +78,14 @@ function ResetPassword() {
 
         <div className="relative z-10">
           <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-balance">
-            Set a new password
+            {t("resetPw.heading", lang)}
           </h1>
 
           {!ready && !done && (
             <p className="mt-4 rounded-xl bg-ochre-soft px-4 py-3 text-[13px] text-foreground">
-              This link may have expired.{" "}
+              {t("resetPw.expired", lang)}{" "}
               <Link to="/auth" className="font-semibold underline">
-                Request a new one
+                {t("resetPw.requestNew", lang)}
               </Link>
               .
             </p>
@@ -87,23 +94,25 @@ function ResetPassword() {
           {ready && !done && (
             <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-semibold">New password</span>
+                <span className="text-[12px] font-semibold">{t("resetPw.label.new", lang)}</span>
                 <PasswordInput
                   value={password}
                   onChange={setPassword}
                   maxLength={72}
                   autoComplete="new-password"
-                  placeholder="At least 6 characters"
+                  placeholder={t("auth.placeholder.password", lang)}
                 />
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-semibold">Confirm new password</span>
+                <span className="text-[12px] font-semibold">
+                  {t("resetPw.label.confirm", lang)}
+                </span>
                 <PasswordInput
                   value={confirm}
                   onChange={setConfirm}
                   maxLength={72}
                   autoComplete="new-password"
-                  placeholder="Type it again"
+                  placeholder={t("auth.placeholder.confirmPassword", lang)}
                 />
               </label>
 
@@ -118,14 +127,14 @@ function ResetPassword() {
                 disabled={busy}
                 className="mt-2 rounded-xl bg-foreground py-3.5 text-[14px] font-semibold text-background transition active:scale-[0.99] disabled:opacity-60"
               >
-                {busy ? "Saving…" : "Save new password"}
+                {busy ? t("resetPw.button.saving", lang) : t("resetPw.button.save", lang)}
               </button>
             </form>
           )}
 
           {done && (
             <p className="mt-6 rounded-xl bg-aloe-soft px-4 py-3 text-[13px] text-foreground">
-              Password updated — taking you to your dashboard…
+              {t("resetPw.success", lang)}
             </p>
           )}
         </div>

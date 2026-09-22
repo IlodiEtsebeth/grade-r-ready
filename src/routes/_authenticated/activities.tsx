@@ -4,6 +4,8 @@ import { AppShell, Card, ScreenHeader } from "@/components/app-shell";
 import { PhotoAttach } from "@/components/photo-attach";
 import { WEEKS, currentWeek } from "@/lib/content";
 import { useActivities, useChild, useSaveActivity } from "@/lib/child-data";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/_authenticated/activities")({
   head: () => ({
@@ -25,12 +27,17 @@ export const Route = createFileRoute("/_authenticated/activities")({
 
 function Activities() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { data: child, isLoading: childLoading } = useChild();
   const { data: activityRows } = useActivities(child?.id);
   const saveActivity = useSaveActivity(child?.id);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [openNoteFor, setOpenNoteFor] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
+
+  useEffect(() => {
+    document.title = t("title.activities", lang);
+  }, [lang]);
 
   useEffect(() => {
     if (!childLoading && !child) navigate({ to: "/setup", replace: true });
@@ -65,7 +72,10 @@ function Activities() {
 
   return (
     <AppShell>
-      <ScreenHeader eyebrow={`Week ${week} of 12`} title={weekPlan.theme} />
+      <ScreenHeader
+        eyebrow={t("activities.weekOf12", lang, { n: week })}
+        title={weekPlan.theme[lang]}
+      />
 
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
         {WEEKS.map((w) => {
@@ -80,7 +90,7 @@ function Activities() {
                   : "bg-surface/70 text-muted-foreground ring-1 ring-line"
               }`}
             >
-              Wk {w.week}
+              {t("activities.weekTab", lang, { n: w.week })}
               {w.week === suggestedWeek && !active ? " •" : ""}
             </button>
           );
@@ -96,13 +106,13 @@ function Activities() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ochre">
-                    {activity.skill} · {activity.minutes} min
+                    {activity.skill[lang]} · {activity.minutes} min
                   </span>
                   <p className="mt-1 font-display text-[14px] font-bold leading-snug">
-                    {activity.title}
+                    {activity.title[lang]}
                   </p>
                   <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-                    {activity.detail}
+                    {activity.detail[lang]}
                   </p>
                 </div>
                 <button
@@ -124,7 +134,7 @@ function Activities() {
                       : "bg-surface/70 text-muted-foreground ring-1 ring-line"
                   }`}
                 >
-                  {hasNote ? "edit note" : "+ add note"}
+                  {hasNote ? t("activities.editNote", lang) : t("activities.addNote", lang)}
                 </button>
                 {hasNote && openNoteFor !== activity.id && (
                   <span className="truncate pl-3 text-[11px] text-muted-foreground italic">
@@ -140,7 +150,7 @@ function Activities() {
                     onChange={(e) => setNoteDraft(e.target.value)}
                     maxLength={280}
                     rows={2}
-                    placeholder="How did it go?"
+                    placeholder={t("activities.notePlaceholder", lang)}
                     className="rounded-xl bg-surface/80 px-3 py-2 text-[13px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
                   />
                   <div className="flex gap-2">
@@ -148,13 +158,13 @@ function Activities() {
                       onClick={() => saveNote(activity.id)}
                       className="flex-1 rounded-lg bg-foreground py-2 text-[12px] font-semibold text-background"
                     >
-                      Save note
+                      {t("common.saveNote", lang)}
                     </button>
                     <button
                       onClick={() => setOpenNoteFor(null)}
                       className="rounded-lg bg-surface/70 px-3 py-2 text-[12px] font-semibold text-muted-foreground ring-1 ring-line"
                     >
-                      Cancel
+                      {t("common.cancel", lang)}
                     </button>
                   </div>
                 </div>

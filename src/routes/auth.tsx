@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { PasswordInput } from "@/components/password-input";
+import { LanguageToggle } from "@/components/app-shell";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -28,14 +31,9 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-const schema = z.object({
-  email: z.string().trim().email("Please enter a valid email address").max(255),
-  password: z.string().min(6, "Password must be at least 6 characters").max(72),
-  fullName: z.string().trim().max(100).optional(),
-});
-
 function AuthPage() {
   const navigate = useNavigate();
+  const { lang, setLang } = useLanguage();
   const { mode: modeParam, confirmed } = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">(modeParam ?? "signup");
   const [fullName, setFullName] = useState("");
@@ -44,9 +42,22 @@ function AuthPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(
-    confirmed ? "Your email is confirmed! Enter your password to sign in." : null,
-  );
+  const [info, setInfo] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = t("title.signIn", lang);
+  }, [lang]);
+
+  useEffect(() => {
+    if (confirmed) setInfo(t("auth.info.emailConfirmed", lang));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmed]);
+
+  const schema = z.object({
+    email: z.string().trim().email(t("auth.validation.email", lang)).max(255),
+    password: z.string().min(6, t("auth.validation.password", lang)).max(72),
+    fullName: z.string().trim().max(100).optional(),
+  });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -63,11 +74,11 @@ function AuthPage() {
       const parsed = z
         .string()
         .trim()
-        .email("Please enter a valid email address")
+        .email(t("auth.validation.email", lang))
         .max(255)
         .safeParse(email);
       if (!parsed.success) {
-        setError(parsed.error.issues[0]?.message ?? "Please check your details");
+        setError(parsed.error.issues[0]?.message ?? t("auth.validation.generic", lang));
         return;
       }
       setBusy(true);
@@ -76,9 +87,9 @@ function AuthPage() {
           redirectTo: `${window.location.origin}/reset-password`,
         });
         if (err) throw err;
-        setInfo("If that email has an account, a reset link is on its way. Check your inbox.");
+        setInfo(t("auth.info.resetSent", lang));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        setError(err instanceof Error ? err.message : t("auth.error.generic", lang));
       } finally {
         setBusy(false);
       }
@@ -87,11 +98,11 @@ function AuthPage() {
 
     const parsed = schema.safeParse({ email, password, fullName });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Please check your details");
+      setError(parsed.error.issues[0]?.message ?? t("auth.validation.generic", lang));
       return;
     }
     if (mode === "signup" && password !== confirmPassword) {
-      setError("Those passwords don't match.");
+      setError(t("auth.validation.passwordMismatch", lang));
       return;
     }
     setBusy(true);
@@ -102,12 +113,12 @@ function AuthPage() {
           password: parsed.data.password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth?mode=signin&confirmed=1`,
-            data: { full_name: parsed.data.fullName ?? "" },
+            data: { full_name: parsed.data.fullName ?? "", language: lang },
           },
         });
         if (err) throw err;
         if (!data.session) {
-          setInfo("Almost there — check your email and click the link to confirm your account.");
+          setInfo(t("auth.info.confirmEmail", lang));
           return;
         }
         navigate({ to: "/setup", replace: true });
@@ -120,7 +131,7 @@ function AuthPage() {
         navigate({ to: "/dashboard", replace: true });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(err instanceof Error ? err.message : t("auth.error.generic", lang));
     } finally {
       setBusy(false);
     }
@@ -133,73 +144,102 @@ function AuthPage() {
         <div className="pointer-events-none absolute bottom-20 -right-16 h-64 w-64 rounded-full bg-aloe/30 blur-3xl" />
 
         <div className="relative z-10">
-          <Link to="/" className="font-mono text-[11px] text-muted-foreground">
-            ‹ Back
-          </Link>
+          <div className="flex items-center justify-between gap-3">
+            <Link to="/" className="font-mono text-[11px] text-muted-foreground">
+              {t("auth.back", lang)}
+            </Link>
+            <LanguageToggle />
+          </div>
 
           <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-balance">
             {mode === "signup"
-              ? "Create your parent account"
+              ? t("auth.heading.signup", lang)
               : mode === "forgot"
-                ? "Reset your password"
-                : "Welcome back"}
+                ? t("auth.heading.forgot", lang)
+                : t("auth.heading.signin", lang)}
           </h1>
           <p className="mt-2 text-[13px] text-muted-foreground">
             {mode === "signup"
-              ? "It takes about a minute. You only need one account for your Grade R child."
+              ? t("auth.subtext.signup", lang)
               : mode === "forgot"
-                ? "Enter your email and we'll send you a link to set a new password."
-                : "Sign in to carry on with the checklist and this week's activities."}
+                ? t("auth.subtext.forgot", lang)
+                : t("auth.subtext.signin", lang)}
           </p>
 
           <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
             {mode === "signup" && (
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-semibold">Your name</span>
+                <span className="text-[12px] font-semibold">{t("auth.label.name", lang)}</span>
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   maxLength={100}
-                  placeholder="e.g. Lerato"
+                  placeholder={t("auth.placeholder.name", lang)}
                   className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
                 />
               </label>
             )}
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-semibold">Email</span>
+              <span className="text-[12px] font-semibold">{t("auth.label.email", lang)}</span>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 maxLength={255}
                 autoComplete="email"
-                placeholder="you@email.com"
+                placeholder={t("auth.placeholder.email", lang)}
                 className="rounded-xl bg-surface/80 px-4 py-3 text-[14px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
               />
             </label>
             {mode !== "forgot" && (
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-semibold">Password</span>
+                <span className="text-[12px] font-semibold">{t("auth.label.password", lang)}</span>
                 <PasswordInput
                   value={password}
                   onChange={setPassword}
                   maxLength={72}
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  placeholder="At least 6 characters"
+                  placeholder={t("auth.placeholder.password", lang)}
                 />
               </label>
             )}
             {mode === "signup" && (
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-semibold">Confirm password</span>
+                <span className="text-[12px] font-semibold">
+                  {t("auth.label.confirmPassword", lang)}
+                </span>
                 <PasswordInput
                   value={confirmPassword}
                   onChange={setConfirmPassword}
                   maxLength={72}
                   autoComplete="new-password"
-                  placeholder="Type it again"
+                  placeholder={t("auth.placeholder.confirmPassword", lang)}
                 />
               </label>
+            )}
+
+            {mode === "signup" && (
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[12px] font-semibold">{t("auth.language.label", lang)}</span>
+                <div className="flex gap-2">
+                  {(["en", "af"] as const).map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => setLang(code)}
+                      className={`flex-1 rounded-xl py-2.5 text-[13px] font-semibold ring-1 transition ${
+                        lang === code
+                          ? "bg-foreground text-background ring-foreground"
+                          : "bg-surface/80 text-muted-foreground ring-line"
+                      }`}
+                    >
+                      {code === "en"
+                        ? t("auth.language.english", lang)
+                        : t("auth.language.afrikaans", lang)}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
 
             {mode === "signin" && (
@@ -212,7 +252,7 @@ function AuthPage() {
                 }}
                 className="self-end text-[12px] font-semibold text-ochre"
               >
-                Forgot password?
+                {t("auth.forgotLink", lang)}
               </button>
             )}
 
@@ -233,12 +273,12 @@ function AuthPage() {
               className="mt-2 rounded-xl bg-foreground py-3.5 text-[14px] font-semibold text-background transition active:scale-[0.99] disabled:opacity-60"
             >
               {busy
-                ? "Please wait…"
+                ? t("auth.button.wait", lang)
                 : mode === "signup"
-                  ? "Create account"
+                  ? t("auth.button.createAccount", lang)
                   : mode === "forgot"
-                    ? "Send reset link"
-                    : "Sign in"}
+                    ? t("auth.button.sendReset", lang)
+                    : t("auth.button.signIn", lang)}
             </button>
           </form>
 
@@ -251,7 +291,7 @@ function AuthPage() {
               }}
               className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
             >
-              ‹ Back to sign in
+              {t("auth.link.backToSignIn", lang)}
             </button>
           ) : (
             <button
@@ -263,7 +303,9 @@ function AuthPage() {
               }}
               className="mt-5 w-full text-center text-[13px] font-semibold text-ochre"
             >
-              {mode === "signup" ? "I already have an account" : "I need to create an account"}
+              {mode === "signup"
+                ? t("auth.link.haveAccount", lang)
+                : t("auth.link.needAccount", lang)}
             </button>
           )}
         </div>

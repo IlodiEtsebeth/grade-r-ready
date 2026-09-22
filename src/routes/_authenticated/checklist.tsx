@@ -5,6 +5,8 @@ import { AppShell, Card, ScreenHeader } from "@/components/app-shell";
 import { PhotoAttach } from "@/components/photo-attach";
 import { CATEGORIES, type ChecklistStatus } from "@/lib/content";
 import { useChecklist, useChild, useSaveChecklistItem } from "@/lib/child-data";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 const searchSchema = z.object({
   category: z.string().optional(),
@@ -30,20 +32,25 @@ export const Route = createFileRoute("/_authenticated/checklist")({
 });
 
 const STATUS_ORDER: ChecklistStatus[] = ["not_started", "developing", "mastered"];
-const SHORT_LABEL: Record<ChecklistStatus, string> = {
-  not_started: "Not yet",
-  developing: "Developing",
-  mastered: "Mastered",
+const STATUS_KEY: Record<ChecklistStatus, string> = {
+  not_started: "checklist.status.notYet",
+  developing: "checklist.status.developing",
+  mastered: "checklist.status.mastered",
 };
 
 function Checklist() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { category: categoryParam } = Route.useSearch();
   const { data: child, isLoading: childLoading } = useChild();
   const { data: checklist } = useChecklist(child?.id);
   const saveItem = useSaveChecklistItem(child?.id);
   const [openNoteFor, setOpenNoteFor] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
+
+  useEffect(() => {
+    document.title = t("title.checklist", lang);
+  }, [lang]);
 
   useEffect(() => {
     if (!childLoading && !child) navigate({ to: "/setup", replace: true });
@@ -77,8 +84,10 @@ function Checklist() {
   return (
     <AppShell>
       <ScreenHeader
-        eyebrow={categoryParam ? "One skill area" : "All skill areas"}
-        title="Checklist"
+        eyebrow={
+          categoryParam ? t("checklist.eyebrow.one", lang) : t("checklist.eyebrow.all", lang)
+        }
+        title={t("checklist.title", lang)}
       />
 
       {categoryParam && (
@@ -86,20 +95,18 @@ function Checklist() {
           onClick={() => navigate({ to: "/checklist", search: {} })}
           className="self-start rounded-full bg-surface/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground ring-1 ring-line"
         >
-          ‹ Show all categories
+          {t("checklist.showAll", lang)}
         </button>
       )}
 
-      <p className="px-1 text-[12px] text-muted-foreground">
-        Tap Not yet, Developing or Mastered for each skill. Tap the note icon to add a quick note.
-      </p>
+      <p className="px-1 text-[12px] text-muted-foreground">{t("checklist.instructions", lang)}</p>
 
       <div className="flex flex-col gap-4">
         {categories.map((category) => (
           <Card key={category.id} className="!p-4">
             <div className="flex items-center gap-2.5">
               <span className={`size-2.5 rounded-full bg-${category.tone}`} />
-              <p className="font-display text-[14px] font-bold">{category.name}</p>
+              <p className="font-display text-[14px] font-bold">{category.name[lang]}</p>
             </div>
 
             <div className="mt-3 flex flex-col gap-2">
@@ -111,9 +118,11 @@ function Checklist() {
                     <div className="flex items-start justify-between gap-3">
                       <span className="min-w-0">
                         <span className="block text-[13px] font-medium leading-snug">
-                          {item.label}
+                          {item.label[lang]}
                         </span>
-                        <span className="block text-[11px] text-muted-foreground">{item.hint}</span>
+                        <span className="block text-[11px] text-muted-foreground">
+                          {item.hint[lang]}
+                        </span>
                       </span>
                       <button
                         onClick={() => openNote(item.id)}
@@ -123,7 +132,7 @@ function Checklist() {
                             : "bg-transparent text-muted-foreground"
                         }`}
                       >
-                        note
+                        {t("checklist.noteButton", lang)}
                       </button>
                     </div>
 
@@ -144,7 +153,7 @@ function Checklist() {
                                 : "bg-surface/70 text-muted-foreground ring-1 ring-line"
                             }`}
                           >
-                            {SHORT_LABEL[s]}
+                            {t(STATUS_KEY[s], lang)}
                           </button>
                         );
                       })}
@@ -163,7 +172,7 @@ function Checklist() {
                           onChange={(e) => setNoteDraft(e.target.value)}
                           maxLength={280}
                           rows={2}
-                          placeholder="e.g. Getting better at this with practice"
+                          placeholder={t("checklist.notePlaceholder", lang)}
                           className="rounded-xl bg-surface/80 px-3 py-2 text-[13px] ring-1 ring-line outline-none focus:ring-2 focus:ring-sungold"
                         />
                         <div className="flex gap-2">
@@ -171,13 +180,13 @@ function Checklist() {
                             onClick={() => saveNote(item.id)}
                             className="flex-1 rounded-lg bg-foreground py-2 text-[12px] font-semibold text-background"
                           >
-                            Save note
+                            {t("common.saveNote", lang)}
                           </button>
                           <button
                             onClick={() => setOpenNoteFor(null)}
                             className="rounded-lg bg-surface/70 px-3 py-2 text-[12px] font-semibold text-muted-foreground ring-1 ring-line"
                           >
-                            Cancel
+                            {t("common.cancel", lang)}
                           </button>
                         </div>
                       </div>

@@ -1,17 +1,42 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import logoIcon from "@/assets/logo-icon-only.png";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
-const NAV = [
-  { to: "/dashboard", label: "Home" },
-  { to: "/checklist", label: "Checklist" },
-  { to: "/activities", label: "Activities" },
-  { to: "/progress", label: "Progress" },
-  { to: "/report", label: "Report" },
-] as const;
+function useNav() {
+  const { lang } = useLanguage();
+  return [
+    { to: "/dashboard", label: t("nav.home", lang) },
+    { to: "/checklist", label: t("nav.checklist", lang) },
+    { to: "/activities", label: t("nav.activities", lang) },
+    { to: "/progress", label: t("nav.progress", lang) },
+    { to: "/report", label: t("nav.report", lang) },
+  ] as const;
+}
+
+export function LanguageToggle() {
+  const { lang, setLang } = useLanguage();
+  return (
+    <div className="flex shrink-0 items-center gap-0.5 rounded-full bg-surface/70 p-0.5 ring-1 ring-line">
+      {(["en", "af"] as const).map((code) => (
+        <button
+          key={code}
+          onClick={() => setLang(code)}
+          className={`rounded-full px-2 py-1 font-mono text-[10px] font-semibold uppercase transition ${
+            lang === code ? "bg-foreground text-background" : "text-muted-foreground"
+          }`}
+        >
+          {code}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const NAV = useNav();
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground antialiased selection:bg-sungold/30">
@@ -21,11 +46,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="pointer-events-none absolute bottom-40 -left-10 h-56 w-56 rounded-full bg-ochre/30 blur-3xl" />
 
         <div className="relative z-10 flex flex-1 flex-col gap-4 px-4 pt-5 pb-28">
-          <div className="flex items-center gap-2">
-            <img src={logoIcon} alt="" className="size-7 shrink-0 object-contain" />
-            <span className="font-display text-[12px] font-bold tracking-tight text-muted-foreground">
-              Grade R Ready
-            </span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <img src={logoIcon} alt="" className="size-7 shrink-0 object-contain" />
+              <span className="font-display text-[12px] font-bold tracking-tight text-muted-foreground">
+                Grade R Ready
+              </span>
+            </div>
+            <LanguageToggle />
           </div>
           {children}
         </div>

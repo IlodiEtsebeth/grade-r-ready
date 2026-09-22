@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export function PasswordInput({
   value,
@@ -13,6 +15,7 @@ export function PasswordInput({
   placeholder?: string;
   maxLength?: number;
 }) {
+  const { lang } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   return (
@@ -30,9 +33,9 @@ export function PasswordInput({
         type="button"
         onClick={() => setVisible((v) => !v)}
         className="absolute top-1/2 right-3 -translate-y-1/2 font-mono text-[11px] font-semibold text-muted-foreground"
-        aria-label={visible ? "Hide password" : "Show password"}
+        aria-label={visible ? t("password.hideAria", lang) : t("password.showAria", lang)}
       >
-        {visible ? "Hide" : "Show"}
+        {visible ? t("password.hide", lang) : t("password.show", lang)}
       </button>
     </div>
   );

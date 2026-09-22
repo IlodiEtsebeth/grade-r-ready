@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Smartphone, X } from "lucide-react";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 const DISMISS_KEY = "grade-r-ready:install-dismissed";
 
@@ -15,6 +17,7 @@ function isIos() {
 }
 
 export function InstallAppCard() {
+  const { lang } = useLanguage();
   const [dismissed, setDismissed] = useState(true);
   const [installed, setInstalled] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -37,7 +40,7 @@ export function InstallAppCard() {
         <button
           onClick={dismiss}
           className="absolute top-4 right-4 grid size-8 place-items-center rounded-full bg-background/50 text-foreground/70 transition hover:bg-background/70 active:scale-90"
-          aria-label="Dismiss"
+          aria-label={t("installCard.dismissAria", lang)}
         >
           <X size={18} strokeWidth={2.5} />
         </button>
@@ -49,10 +52,10 @@ export function InstallAppCard() {
             </span>
             <div className="min-w-0">
               <p className="font-display text-[17px] font-bold leading-tight tracking-tight">
-                Add Grade R Ready to your phone
+                {t("installCard.title", lang)}
               </p>
               <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
-                Get quick access to activities and progress from your home screen.
+                {t("installCard.body", lang)}
               </p>
             </div>
           </div>
@@ -62,7 +65,7 @@ export function InstallAppCard() {
               onClick={() => setExpanded(true)}
               className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-foreground py-3.5 text-[15px] font-bold text-background shadow-md shadow-foreground/10 transition hover:bg-foreground/90 hover:shadow-lg active:scale-[0.98]"
             >
-              <span>Show me how</span>
+              <span>{t("installCard.showMe", lang)}</span>
               <ArrowRight
                 size={18}
                 strokeWidth={2.5}
@@ -72,24 +75,15 @@ export function InstallAppCard() {
           ) : (
             <div className="space-y-3">
               <p className="rounded-2xl bg-background/60 px-4 py-3 text-[13px] leading-relaxed text-foreground">
-                {isIos() ? (
-                  <>
-                    Tap the <span className="font-semibold">Share</span> button in Safari (the square with an
-                    arrow), then scroll down and tap{" "}
-                    <span className="font-semibold">"Add to Home Screen"</span>.
-                  </>
-                ) : (
-                  <>
-                    Tap the <span className="font-semibold">⋮ menu</span> (top right of Chrome), then tap{" "}
-                    <span className="font-semibold">"Add to Home screen"</span>.
-                  </>
-                )}
+                {isIos()
+                  ? t("installCard.iosInstructions", lang)
+                  : t("installCard.androidInstructions", lang)}
               </p>
               <button
                 onClick={() => setExpanded(false)}
                 className="w-full rounded-2xl bg-background/40 py-2.5 text-[13px] font-semibold text-foreground/80 transition hover:bg-background/60 active:scale-[0.99]"
               >
-                Hide instructions
+                {t("installCard.hide", lang)}
               </button>
             </div>
           )}

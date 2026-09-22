@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import logoIcon from "@/assets/logo-icon-only.png";
+import { LanguageToggle } from "@/components/app-shell";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,6 +26,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { lang } = useLanguage();
+
+  useEffect(() => {
+    document.title = t("title.landing", lang);
+  }, [lang]);
+
   return (
     <div className="min-h-screen bg-background font-body text-foreground antialiased">
       <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col overflow-hidden px-5 pt-10 pb-10">
@@ -30,46 +40,54 @@ function Landing() {
         <div className="pointer-events-none absolute bottom-10 -left-10 h-56 w-56 rounded-full bg-ochre/30 blur-3xl" />
 
         <div className="relative z-10 flex flex-1 flex-col">
-          <div className="flex items-center gap-2.5">
-            <img src={logoIcon} alt="Piece of Play" className="size-11 shrink-0 object-contain" />
-            <div>
-              <p className="font-display text-[15px] font-bold leading-none">Grade R Ready</p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                For parents · South Africa
-              </p>
+          <div className="flex items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5">
+              <img src={logoIcon} alt="Piece of Play" className="size-11 shrink-0 object-contain" />
+              <div>
+                <p className="font-display text-[15px] font-bold leading-none">Grade R Ready</p>
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  {t("landing.tagline", lang)}
+                </p>
+              </div>
             </div>
+            <LanguageToggle />
           </div>
 
           <div className="mt-10">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">
-              Ready by December
+              {t("landing.eyebrow", lang)}
             </p>
             <h1 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tight text-balance">
-              Know if your child is ready for Grade 1
+              {t("landing.heading", lang)}
             </h1>
             <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-              Tick off what your Grade R child can already do, follow 12 weeks of short home
-              activities, and get a readiness report you can share with the school.
+              {t("landing.body", lang)}
             </p>
           </div>
 
           <div className="mt-8 flex flex-col gap-3">
             <div className="rounded-2xl bg-surface/70 p-4 ring-1 ring-line backdrop-blur-md">
-              <p className="font-display text-[14px] font-bold">A checklist in plain language</p>
+              <p className="font-display text-[14px] font-bold">
+                {t("landing.feature1.title", lang)}
+              </p>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                Five skill areas, from packing away toys to counting to 10.
+                {t("landing.feature1.body", lang)}
               </p>
             </div>
             <div className="rounded-2xl bg-surface/70 p-4 ring-1 ring-line backdrop-blur-md">
-              <p className="font-display text-[14px] font-bold">10 minutes a day at home</p>
+              <p className="font-display text-[14px] font-bold">
+                {t("landing.feature2.title", lang)}
+              </p>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                Reading, counting, cutting and rhyming games with things you already have.
+                {t("landing.feature2.body", lang)}
               </p>
             </div>
             <div className="rounded-2xl bg-surface/70 p-4 ring-1 ring-line backdrop-blur-md">
-              <p className="font-display text-[14px] font-bold">One clear answer</p>
+              <p className="font-display text-[14px] font-bold">
+                {t("landing.feature3.title", lang)}
+              </p>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                Needs support, Developing or Ready — with what to practise next.
+                {t("landing.feature3.body", lang)}
               </p>
             </div>
           </div>
@@ -79,10 +97,10 @@ function Landing() {
               to="/auth"
               className="block w-full rounded-xl bg-foreground py-3.5 text-center text-[14px] font-semibold text-background transition active:scale-[0.99]"
             >
-              Start my child's checklist
+              {t("landing.cta", lang)}
             </Link>
             <p className="mt-3 text-center text-[12px] text-muted-foreground">
-              Free · one Grade R child per account
+              {t("landing.finePrint", lang)}
             </p>
           </div>
         </div>

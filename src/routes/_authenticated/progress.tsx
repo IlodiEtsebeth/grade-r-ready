@@ -7,11 +7,13 @@ import {
   TOTAL_ITEMS,
   WEEKS,
   currentWeek,
-  readinessLabel,
+  readinessKey,
   readinessScore,
   type ChecklistStatus,
 } from "@/lib/content";
 import { useActivities, useChecklist, useChild } from "@/lib/child-data";
+import { useLanguage } from "@/lib/language";
+import { t } from "@/lib/ui-strings";
 
 export const Route = createFileRoute("/_authenticated/progress")({
   head: () => ({
@@ -40,11 +42,22 @@ const TONE_BAR: Record<string, string> = {
   ochre: "bg-ochre",
 };
 
+const READINESS_KEY_TO_STRING = {
+  ready: "readiness.ready",
+  developing: "readiness.developing",
+  needs_support: "readiness.needsSupport",
+} as const;
+
 function ProgressPage() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { data: child, isLoading } = useChild();
   const { data: checklist } = useChecklist(child?.id);
   const { data: activityRows } = useActivities(child?.id);
+
+  useEffect(() => {
+    document.title = t("title.progress", lang);
+  }, [lang]);
 
   useEffect(() => {
     if (!isLoading && !child) navigate({ to: "/setup", replace: true });
@@ -54,7 +67,8 @@ function ProgressPage() {
   for (const row of checklist ?? []) statuses[row.item_id] = row.status;
 
   const score = readinessScore(statuses);
-  const label = readinessLabel(score);
+  const rKey = readinessKey(score);
+  const label = t(READINESS_KEY_TO_STRING[rKey], lang);
   const mastered = Object.values(statuses).filter((s) => s === "mastered").length;
   const developing = Object.values(statuses).filter((s) => s === "developing").length;
   const notStarted = TOTAL_ITEMS - mastered - developing;
@@ -72,25 +86,32 @@ function ProgressPage() {
     if ("item_id" in row) {
       const item = CATEGORIES.flatMap((c) => c.items).find((i) => i.id === row.item_id);
       return {
-        title: item?.label ?? "Checklist skill",
-        detail: row.status === "mastered" ? "Marked as mastered" : "Marked as developing",
+        title: item?.label[lang] ?? t("progress.update.checklistSkill", lang),
+        detail:
+          row.status === "mastered"
+            ? t("progress.update.markedMastered", lang)
+            : t("progress.update.markedDeveloping", lang),
       };
     }
     const activity = WEEKS.flatMap((w) => w.activities).find((a) => a.id === row.activity_id);
     return {
-      title: activity?.title ?? "Home activity",
-      detail: row.done ? "Activity completed" : "Activity updated",
+      title: activity?.title[lang] ?? t("progress.update.homeActivity", lang),
+      detail: row.done
+        ? t("progress.update.activityCompleted", lang)
+        : t("progress.update.activityUpdated", lang),
     };
   }
 
   return (
     <AppShell>
       <ScreenHeader
-        eyebrow="Progress tracker"
-        title={`${child?.name ?? "Your child"}'s journey`}
+        eyebrow={t("progress.eyebrow", lang)}
+        title={t("progress.journey", lang, {
+          name: child?.name ?? t("dashboard.fallbackName", lang),
+        })}
         right={
           <span className="shrink-0 rounded-full bg-surface/70 px-3 py-1.5 font-mono text-[11px] ring-1 ring-line">
-            Week {week} of 12
+            {t("progress.weekBadge", lang, { n: week })}
           </span>
         }
       />
@@ -99,14 +120,14 @@ function ProgressPage() {
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ochre">
-              Readiness score
+              {t("progress.readinessScore", lang)}
             </p>
             <p className="mt-1 font-display text-4xl font-extrabold leading-none">{score}%</p>
             <p className="mt-1.5 text-[13px] text-muted-foreground">{label}</p>
           </div>
           <div className="text-right">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              Activities done
+              {t("progress.activitiesDone", lang)}
             </p>
             <p className="mt-1 font-display text-2xl font-extrabold leading-none">
               {activitiesDone}
@@ -127,9 +148,9 @@ function ProgressPage() {
         </div>
         <div className="mt-3 grid grid-cols-3 gap-2 text-center">
           {[
-            { n: mastered, l: "Mastered", c: "bg-aloe" },
-            { n: developing, l: "Developing", c: "bg-sungold" },
-            { n: notStarted, l: "Not started", c: "bg-line" },
+            { n: mastered, l: t("progress.chip.mastered", lang), c: "bg-aloe" },
+            { n: developing, l: t("progress.chip.developing", lang), c: "bg-sungold" },
+            { n: notStarted, l: t("progress.chip.notStarted", lang), c: "bg-line" },
           ].map((s) => (
             <div key={s.l} className="rounded-2xl bg-surface/60 py-2.5 ring-1 ring-line">
               <p className="font-display text-lg font-extrabold leading-none">{s.n}</p>
@@ -142,7 +163,7 @@ function ProgressPage() {
         </div>
       </Card>
 
-      <p className="px-1 font-display text-[15px] font-bold">By skill area</p>
+      <p className="px-1 font-display text-[15px] font-bold">{t("progress.bySkillArea", lang)}</p>
       <Card className="flex flex-col gap-4">
         {CATEGORIES.map((category) => {
           const done = category.items.filter((i) => statuses[i.id] === "mastered").length;
@@ -151,7 +172,7 @@ function ProgressPage() {
           return (
             <div key={category.id}>
               <div className="flex items-center justify-between gap-3">
-                <p className="truncate text-[13px] font-semibold">{category.name}</p>
+                <p className="truncate text-[13px] font-semibold">{category.name[lang]}</p>
                 <span className="shrink-0 font-mono text-[11px] text-muted-foreground">{pct}%</span>
               </div>
               <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-line/70">
@@ -161,14 +182,14 @@ function ProgressPage() {
                 />
               </div>
               <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-                {done} mastered · {dev} developing · {category.items.length} skills
+                {t("progress.categoryLine", lang, { done, dev, total: category.items.length })}
               </p>
             </div>
           );
         })}
       </Card>
 
-      <p className="px-1 font-display text-[15px] font-bold">Week by week</p>
+      <p className="px-1 font-display text-[15px] font-bold">{t("progress.weekByWeek", lang)}</p>
       <Card>
         <div className="grid grid-cols-6 gap-2">
           {WEEKS.map((w) => {
@@ -194,16 +215,14 @@ function ProgressPage() {
           })}
         </div>
         <p className="mt-3 font-mono text-[10px] text-muted-foreground">
-          Filled blocks are weeks you have worked on at home.
+          {t("progress.weekCaption", lang)}
         </p>
       </Card>
 
-      <p className="px-1 font-display text-[15px] font-bold">Recent updates</p>
+      <p className="px-1 font-display text-[15px] font-bold">{t("progress.recentUpdates", lang)}</p>
       <Card className="flex flex-col gap-3">
         {updates.length === 0 && (
-          <p className="text-[13px] text-muted-foreground">
-            Nothing yet. Tick off a checklist skill or an activity and it will show up here.
-          </p>
+          <p className="text-[13px] text-muted-foreground">{t("progress.empty", lang)}</p>
         )}
         {updates.map((row, i) => {
           const d = describe(row);
@@ -214,7 +233,7 @@ function ProgressPage() {
                 <p className="font-mono text-[10px] text-muted-foreground">{d.detail}</p>
               </div>
               <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
-                {new Date(row.updated_at).toLocaleDateString("en-ZA", {
+                {new Date(row.updated_at).toLocaleDateString(lang === "af" ? "af-ZA" : "en-ZA", {
                   day: "numeric",
                   month: "short",
                 })}
@@ -228,7 +247,7 @@ function ProgressPage() {
         to="/report"
         className="rounded-xl bg-foreground py-3 text-center text-[13px] font-semibold text-background transition active:scale-[0.99]"
       >
-        See the readiness report
+        {t("progress.seeReport", lang)}
       </Link>
     </AppShell>
   );
