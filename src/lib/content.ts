@@ -292,7 +292,7 @@ export const WEEKS: ActivityWeek[] = [
         title: { en: "Two-step instruction game", af: "Geluidspatrone" },
         detail: {
           en: "Give playful two-step instructions like 'hop twice and touch your nose'.",
-          af: "Klap hande 3 keer en vra kind moet die naboots. Hierdie patrone kan moeiliker gemaak word soos wat kind ontwikkel",
+          af: "Klap hande 3 keer en vra kind moet dit naboots. Hierdie patrone kan moeiliker gemaak word soos die kind ontwikkel.",
         },
         minutes: 10,
         skill: { en: "Listening", af: "Luistervaardighede" },
@@ -383,7 +383,7 @@ export const WEEKS: ActivityWeek[] = [
           af: "Sorteer sokkies of blokkies volgens kleur, dan volgens grootte.",
         },
         minutes: 10,
-        skill: { en: "Numeracy", af: "Syfervaardigheid" },
+        skill: { en: "Numeracy", af: "Datahantering" },
       },
       {
         id: "w4-a2",
@@ -393,7 +393,7 @@ export const WEEKS: ActivityWeek[] = [
           af: "Maak 'n kraal- of blokkiespatroon en vra jou kind om dit te kopieer.",
         },
         minutes: 10,
-        skill: { en: "Numeracy", af: "Syfervaardigheid" },
+        skill: { en: "Numeracy", af: "Patrone" },
       },
       {
         id: "w4-a3",
@@ -462,7 +462,7 @@ export const WEEKS: ActivityWeek[] = [
         title: { en: "More, less or same", af: "Meer, minder of dieselfde" },
         detail: {
           en: "Share snacks into two piles and ask which has more.",
-          af: 'Deel 10 lekkergoed in 3 bakkies, vra vrae soos "watter bakkie het meer?", "Watter bakkie het die minste?" "Hoe kan ons dit deel dat ek en jy dieselfde het?"',
+          af: 'Deel 10 lekkergoed in 3 bakkies, vra vrae soos "Watter bakkie het meer?", "Watter bakkie het die minste?" "Hoe kan ons dit deel dat ek en jy dieselfde het?"',
         },
         minutes: 10,
         skill: { en: "Numeracy", af: "Syfervaardigheid" },
@@ -570,7 +570,7 @@ export const WEEKS: ActivityWeek[] = [
         title: { en: "Clap the syllables", af: "Klap die lettergrepe" },
         detail: {
           en: "Clap out the parts of family names and food words.",
-          af: 'Klap die lettergrepe van gesinsname en kosname uit.("mam-ma" - 2 lettergrepe, "ta-ma-tie" - 3 lettergrepe)',
+          af: 'Klap die lettergrepe van gesinsname en kos name uit. ("mam-ma" - 2 lettergrepe, "ta-ma-tie" - 3 lettergrepe)',
         },
         minutes: 10,
         skill: { en: "Literacy", af: "Geletterdheid" },
@@ -698,7 +698,7 @@ export const WEEKS: ActivityWeek[] = [
         title: { en: "Show what I can do", af: "Wys wat ek kan doen" },
         detail: {
           en: "Let your child show off name writing, counting and cutting.",
-          af: "Laat jou kind wys hoe hulle naam skryf, tel en knip. ",
+          af: "Oefen gereeld al die aktiwiteite wat gedoen is in die 12 weke. Fokus daarop om leer altyd speel-speel te doen. Kyk of kind sy naam, nommers en klanke nou met meer selfvertroue kan skryf, instruksies volg en 'n positiewe houding toon teenoor Graad 1.",
         },
         minutes: 15,
         skill: { en: "Review", af: "Hersiening" },
