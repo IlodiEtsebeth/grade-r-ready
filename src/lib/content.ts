@@ -590,7 +590,7 @@ export const WEEKS: ActivityWeek[] = [
         title: { en: "Build a word", af: "Skryf en teken" },
         detail: {
           en: "Using only s, a, t, i, p, n, say a simple word out loud — like sat, tap, pin or nap — and help your child sound it out and find the matching letters.",
-          af: "Gebruik die 5 kort klinkers en skryf saam 'n woord neer en vra kind om bypassende prent te teken bv. a-appel, e- emmer, o-olifant, u-uil, i-ink. (Klinkers kan ook in die middel van 'n 3-letter woord wees)",
+          af: "Gebruik die 5 kort klinkers en skryf saam 'n woord neer en vra kind om bypassende prent te teken bv. a-appel, e- emmer, o-olifant, u-uil, i-ink. (Klinkers kan ook in die middel van 3 letter woorde wees)",
         },
         minutes: 10,
         skill: { en: "Literacy", af: "Geletterdheid" },
