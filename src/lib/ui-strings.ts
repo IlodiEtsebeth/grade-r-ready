@@ -129,6 +129,7 @@ export const UI: Record<string, Entry> = {
   },
   "dashboard.signOut": { en: "Sign out", af: "Teken uit" },
   "dashboard.thisWeek": { en: "This week at home", af: "Hierdie week by die huis" },
+  "dashboard.watchlistCta": { en: "Open", af: "Maak oop" },
   "dashboard.weekDone": { en: "{done}/{total} done", af: "{done}/{total} gedoen" },
   "installCard.androidInstructions": {
     en: 'Tap the ⋮ menu (top right of Chrome), then tap "Add to Home screen".',
@@ -386,6 +387,11 @@ export const UI: Record<string, Entry> = {
   },
   "title.setup": { en: "Add your child — Grade R Ready", af: "Voeg jou kind by - Grade R Ready" },
   "title.signIn": { en: "Sign in — Grade R Ready", af: "Teken in - Grade R Ready" },
+  "title.watchlist": {
+    en: "Extra Things to Watch — Grade R Ready",
+    af: "Ekstra Dinge om na te kyk - Grade R Ready",
+  },
+  "watchlist.eyebrow": { en: "Optional", af: "Opsioneel" },
 };
 
 /**

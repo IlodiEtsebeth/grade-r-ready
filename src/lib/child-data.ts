@@ -134,6 +134,48 @@ export function useSaveChecklistItem(childId?: string) {
   });
 }
 
+export type WatchlistRow = {
+  item_id: string;
+  checked: boolean;
+  updated_at: string;
+};
+
+export function useWatchlist(childId?: string) {
+  return useQuery({
+    queryKey: ["watchlist", childId],
+    enabled: !!childId,
+    queryFn: async (): Promise<WatchlistRow[]> => {
+      const { data, error } = await supabase
+        .from("watchlist_progress")
+        .select("item_id,checked,updated_at")
+        .eq("child_id", childId!);
+      if (error) throw error;
+      return (data ?? []) as WatchlistRow[];
+    },
+  });
+}
+
+export function useSaveWatchlistItem(childId?: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { itemId: string; checked: boolean }) => {
+      const parent_id = await requireUserId();
+      const payload = {
+        child_id: childId!,
+        parent_id,
+        item_id: input.itemId,
+        checked: input.checked,
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await supabase
+        .from("watchlist_progress")
+        .upsert(payload, { onConflict: "child_id,item_id" });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["watchlist", childId] }),
+  });
+}
+
 export function useActivities(childId?: string) {
   return useQuery({
     queryKey: ["activities", childId],

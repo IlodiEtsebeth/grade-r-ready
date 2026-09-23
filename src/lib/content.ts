@@ -740,3 +740,245 @@ export function currentWeek(startDate: string | null | undefined) {
   const diffDays = Math.floor((Date.now() - start.getTime()) / 86400000);
   return Math.min(12, Math.max(1, Math.floor(diffDays / 7) + 1));
 }
+
+// ---------------------------------------------------------------------------
+// "Extra Things to Watch" — an optional, unscored watch-list, separate from
+// the graded readiness checklist above. Generated from the approved
+// GradeRReady_WatchList_Review spreadsheet. Ticking these items never
+// affects readinessScore()/readinessKey() — this lives in its own Supabase
+// table (watchlist_progress) and its own page (/watchlist).
+// ---------------------------------------------------------------------------
+
+export type WatchlistItem = { id: string; label: Bi };
+export type WatchlistSubgroup = { id: string; title: Bi; items: WatchlistItem[] };
+export type WatchlistGroup = {
+  id: string;
+  title: Bi;
+  /** Shown once WATCHLIST_NUDGE_THRESHOLD or more items in this group are ticked. */
+  nudge: Bi;
+  subgroups?: WatchlistSubgroup[];
+  items?: WatchlistItem[];
+};
+
+export const WATCHLIST_SECTION: { title: Bi; subtitle: Bi; intro: Bi } = {
+  title: { en: "Extra Things to Watch", af: "Ekstra Dinge om na te kyk" },
+  subtitle: {
+    en: "Optional - this isn't part of your readiness score",
+    af: "Opsioneel - dit is nie deel van jou gereedheidsverslag nie",
+  },
+  intro: {
+    en: "These are things Grade R teachers often keep an eye on. Every child develops at their own pace, and ticking one or two doesn't mean there's a problem. If a few stand out in one area, it's worth mentioning to your child's teacher - they can help you figure out if extra support would help.",
+    af: "Hierdie is dinge waarop Graad R-onderwysers dikwels na kyk. Elke kind ontwikkel op sy of haar eie pas, en om een of twee te merk beteken nie noodwendig daar is 'n probleem nie. As 'n paar in een area uitstaan, is dit die moeite werd om dit met jou kind se onderwyser te bespreek - hulle kan jou help raad gee of ekstra ondersteuning nodig is.",
+  },
+};
+
+export const WATCHLIST_NUDGE_THRESHOLD = 3;
+
+export const WATCHLIST: WatchlistGroup[] = [
+  {
+    id: "movement",
+    title: {
+      en: "Movement, Coordination & Independence",
+      af: "Beweging, Koördinasie & Selfstandigheid",
+    },
+    nudge: {
+      en: "You've noticed a few of these - worth mentioning to your child's teacher, who may suggest chatting to an occupational therapist.",
+      af: "Jy het 'n paar van hierdie gemerk - dit is die moeite werd om dit met jou kind se onderwyser te bespreek, wat kan voorstel om met 'n arbeidsterapeut te gesels.",
+    },
+    subgroups: [
+      {
+        id: "finemotor",
+        title: { en: "Fine Motor & Pre-writing", af: "Fynmotories & Skryfvaardighede" },
+        items: [
+          {
+            id: "movement.finemotor.item1",
+            label: {
+              en: "Awkward or very tight pencil/crayon grip for their age",
+              af: "Ongemaklike of baie styf potloodgreep vir haar/sy ouderdom",
+            },
+          },
+          {
+            id: "movement.finemotor.item2",
+            label: {
+              en: "Struggles to cut along a line with scissors",
+              af: "Sukkel om met 'n skêr langs 'n lyn te sny",
+            },
+          },
+          {
+            id: "movement.finemotor.item3",
+            label: {
+              en: "Finds it hard to copy simple shapes (circle, triangle, square) or draw a basic picture",
+              af: "Vind dit moeilik om eenvoudige vorms (sirkel, driehoek, vierkant) te teken of 'n basiese prentjie te teken",
+            },
+          },
+          {
+            id: "movement.finemotor.item4",
+            label: {
+              en: "Struggles to write their own name, or very weak letter formation",
+              af: "Sukkel om haar/sy naam te skryf of om letters korrek te vorm.",
+            },
+          },
+          {
+            id: "movement.finemotor.item5",
+            label: {
+              en: "Tires very quickly during writing or drawing activities. Tends to press too hard/too lightly with a pencil/crayon",
+              af: "Raak baie vinnig moeg tydens skryf of tekenaktiwiteite. Druk te hard/te sag met potlood/kryt",
+            },
+          },
+          {
+            id: "movement.finemotor.item6",
+            label: {
+              en: "Finds tearing paper, pasting, or threading beads very frustrating",
+              af: "Vind dit baie frustrerend om papier te skeur, te plak, of krale te ryg",
+            },
+          },
+        ],
+      },
+      {
+        id: "grossmotor",
+        title: { en: "Gross Motor & Sensory", af: "Grootmotories & Sensories" },
+        items: [
+          {
+            id: "movement.grossmotor.item1",
+            label: {
+              en: "Seems clumsy, bumps into things, or avoids climbing, running or jumping activities",
+              af: "Lyk lomp, stamp teen dinge vas, of vermy klim, hardloop en spring aktiwiteite",
+            },
+          },
+          {
+            id: "movement.grossmotor.item2",
+            label: {
+              en: "Finds balancing tasks very difficult - like hopping on one foot, walking on a straight line",
+              af: "Sukkel met balanstake soos om op een been te huppel, of om op 'n reguit lyn te loop",
+            },
+          },
+          {
+            id: "movement.grossmotor.item3",
+            label: {
+              en: "Strong over- or under-reaction to touch, noise, textures, or movement",
+              af: "Sterk oor- of onder-reaksie op aanraking, harde geluide, teksture, of beweging",
+            },
+          },
+        ],
+      },
+      {
+        id: "selfcare",
+        title: { en: "Self-Care & Independence", af: "Selfsorg & Selfstandigheid" },
+        items: [
+          {
+            id: "movement.selfcare.item1",
+            label: {
+              en: "Difficulty with buttons, zips, or shoelaces. Struggles to dress themselves, open containers or packets",
+              af: "Sukkel met knope, ritse, of skoenveters. Vind dit moeilik om self aan te trek of om bottels en pakkies self oop te maak.",
+            },
+          },
+          {
+            id: "movement.selfcare.item2",
+            label: {
+              en: "Still needs a lot of help with using the toilet, this includes wiping, or washing hands independently",
+              af: "Het steeds baie hulp nodig om die toilet te gebruik, soos om af te vee, hande te was, broek af en op te trek",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "communication",
+    title: { en: "Communication & Language", af: "Kommunikasie & Taal" },
+    nudge: {
+      en: "You've noticed a few of these - worth mentioning to your child's teacher, who may suggest chatting to a speech-language therapist.",
+      af: "Jy het 'n paar van hierdie gemerk - dit is die moeite werd om dit met jou kind se onderwyser te bespreek, wat kan voorstel om met 'n spraak-taalterapeut te gesels.",
+    },
+    items: [
+      {
+        id: "communication.item1",
+        label: {
+          en: "Speech that's hard for unfamiliar adults to understand",
+          af: "Spraak wat moeilik is vir vreemde volwassenes om te verstaan",
+        },
+      },
+      {
+        id: "communication.item2",
+        label: {
+          en: "Trouble following two- or three-step instructions",
+          af: "Sukkel om twee- of drie-stap-instruksies te volg",
+        },
+      },
+      {
+        id: "communication.item3",
+        label: {
+          en: "Noticeably shorter/simpler sentences than same-age peers",
+          af: "Merkbare korter of eenvoudiger sinne as ander kinders van dieselfde ouderdom",
+        },
+      },
+      {
+        id: "communication.item4",
+        label: {
+          en: "Specific sounds still missing beyond what's typical for the age",
+          af: "Sekere klanke ontbreek steeds, meer as wat tipies is vir die ouderdom",
+        },
+      },
+      {
+        id: "communication.item5",
+        label: {
+          en: "Small vocabulary compared to peers",
+          af: "Kleiner woordeskat in vergelyking met kinders van dieselfde ouderdom",
+        },
+      },
+      {
+        id: "communication.item6",
+        label: {
+          en: "Repeating sounds/words in a way that seems to bother the child or has no control over the repetition of the sounds.",
+          af: "Herhaal klanke/woorde op 'n manier wat die kind pla of geen beheer het oor nie. Dit kan onwillekeurig voorkom",
+        },
+      },
+    ],
+  },
+  {
+    id: "behaviour",
+    title: { en: "Behaviour & Self-Regulation", af: "Gedrag & Self-Regulering" },
+    nudge: {
+      en: "You've noticed a few of these - every child settles into self-regulation at their own pace, but it's worth mentioning to your child's teacher so you can figure out together if extra support would help.",
+      af: "Jy het 'n paar van hierdie gemerk - elke kind ontwikkel selfregulering op sy/haar eie pas, maar dit is die moeite werd om dit met jou kind se onderwyser te bespreek sodat julle saam kan uitwerk of ekstra ondersteuning nodig is.",
+    },
+    items: [
+      {
+        id: "behaviour.item1",
+        label: {
+          en: "Finds it very hard to separate from a parent/caregiver, well beyond what's typical for the age",
+          af: "Vind dit baie moeilik om van 'n ouer/versorger te skei, baie meer as wat tipies is vir die ouderdom",
+        },
+      },
+      {
+        id: "behaviour.item2",
+        label: {
+          en: "Struggles to manage big emotions - frequent meltdowns or difficulty calming down",
+          af: "Sukkel om groot emosies te hanteer - gereelde uitbarstings of sukkel om self te reguleer",
+        },
+      },
+      {
+        id: "behaviour.item3",
+        label: {
+          en: "Finds it very hard to sit, focus, or stay on a task, even for short activities",
+          af: "Vind dit baie moeilik om te sit, te fokus, of by 'n taak te bly, selfs vir kort aktiwiteite",
+        },
+      },
+      {
+        id: "behaviour.item4",
+        label: {
+          en: 'Seems to forget instructions very quickly, or struggles with simple sequencing ("first this, then that")',
+          af: 'Vergeet eenvoudige instruksies baie vinnig, of sukkel met eenvoudige volgorde ("eers dit, dan dit")',
+        },
+      },
+    ],
+  },
+];
+
+/** Every item id within a group, across its subgroups if it has them. */
+export function watchlistGroupItemIds(group: WatchlistGroup): string[] {
+  if (group.subgroups) return group.subgroups.flatMap((sg) => sg.items.map((i) => i.id));
+  return (group.items ?? []).map((i) => i.id);
+}
+
+export const ALL_WATCHLIST_ITEMS = WATCHLIST.flatMap((g) => watchlistGroupItemIds(g));

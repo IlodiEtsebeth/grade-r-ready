@@ -5,6 +5,7 @@ import { InstallAppCard } from "@/components/install-app-card";
 import {
   CATEGORIES,
   TOTAL_ITEMS,
+  WATCHLIST_SECTION,
   WEEKS,
   currentWeek,
   readinessKey,
@@ -235,6 +236,23 @@ function Dashboard() {
           );
         })}
       </div>
+
+      <Link
+        to="/watchlist"
+        className="flex items-center justify-between gap-3 rounded-2xl bg-surface/70 p-4 ring-1 ring-line backdrop-blur-md transition active:bg-surface"
+      >
+        <div className="min-w-0">
+          <p className="truncate font-display text-[14px] font-bold leading-tight">
+            {WATCHLIST_SECTION.title[lang]}
+          </p>
+          <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+            {WATCHLIST_SECTION.subtitle[lang]}
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full bg-background/60 px-3 py-1.5 text-[11px] font-semibold ring-1 ring-line">
+          {t("dashboard.watchlistCta", lang)}
+        </span>
+      </Link>
 
       <button
         onClick={async () => {

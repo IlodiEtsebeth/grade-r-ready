@@ -162,6 +162,41 @@ export type Database = {
         };
         Relationships: [];
       };
+      watchlist_progress: {
+        Row: {
+          checked: boolean;
+          child_id: string;
+          id: string;
+          item_id: string;
+          parent_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          checked?: boolean;
+          child_id: string;
+          id?: string;
+          item_id: string;
+          parent_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          checked?: boolean;
+          child_id?: string;
+          id?: string;
+          item_id?: string;
+          parent_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_progress_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: false;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
