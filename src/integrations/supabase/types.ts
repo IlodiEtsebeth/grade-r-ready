@@ -143,18 +143,21 @@ export type Database = {
       };
       account_access: {
         Row: {
+          access_until: string | null;
           email: string | null;
           id: string;
           status: string;
           updated_at: string;
         };
         Insert: {
+          access_until?: string | null;
           email?: string | null;
           id: string;
           status?: string;
           updated_at?: string;
         };
         Update: {
+          access_until?: string | null;
           email?: string | null;
           id?: string;
           status?: string;

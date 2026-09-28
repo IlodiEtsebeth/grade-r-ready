@@ -199,6 +199,11 @@ export const UI: Record<string, Entry> = {
   },
   "pending.removed.heading": { en: "Access removed", af: "Toegang verwyder" },
   "pending.signOut": { en: "Sign out", af: "Teken uit" },
+  "pending.trialEnded.body": {
+    en: "Your 5-day free trial has come to an end. Thank you so much for testing Grade R Ready! Check your email for your special offer to keep using the app. Everything you've ticked off is saved and waiting for you.",
+    af: "Jou 5-dag gratis proeftydperk is verby. Baie dankie dat jy Grade R Ready getoets het! Kyk in jou e-pos vir jou spesiale aanbod om die app verder te gebruik. Alles wat jy afgemerk het, is gestoor en wag vir jou.",
+  },
+  "pending.trialEnded.heading": { en: "Thank you for testing!", af: "Dankie dat jy getoets het!" },
   "pending.waiting.body": {
     en: "Your account is being reviewed. This is usually quick — you'll get access as soon as it's confirmed, no need to sign up again.",
     af: "Jou rekening word nagegaan. Dit is gewoonlik vinnig - jy sal toegang kry sodra dit bevestig is, jy hoef nie weer in te teken nie.",

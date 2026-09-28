@@ -52,6 +52,15 @@ function Pending() {
 
           {isLoading ? (
             <p className="mt-6 text-[13px] text-muted-foreground">{t("pending.checking", lang)}</p>
+          ) : status === "trial_ended" ? (
+            <>
+              <h1 className="mt-6 font-display text-xl font-extrabold tracking-tight text-balance">
+                {t("pending.trialEnded.heading", lang)}
+              </h1>
+              <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+                {t("pending.trialEnded.body", lang)}
+              </p>
+            </>
           ) : status === "removed" ? (
             <>
               <h1 className="mt-6 font-display text-xl font-extrabold tracking-tight text-balance">

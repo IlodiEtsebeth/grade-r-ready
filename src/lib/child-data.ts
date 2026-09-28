@@ -32,7 +32,23 @@ async function requireUserId() {
   return data.user.id;
 }
 
-export type AccessStatus = "pending" | "approved" | "removed";
+export type AccessStatus = "pending" | "approved" | "removed" | "trial_ended";
+
+// Works out what a parent may see. An approved parent with an `access_until`
+// date in the past is on a free trial that has ended.
+export function resolveAccess(
+  row: { status: string; access_until: string | null } | null | undefined,
+): AccessStatus {
+  if (!row) return "pending";
+  if (row.status === "approved") {
+    if (row.access_until && new Date(row.access_until).getTime() <= Date.now()) {
+      return "trial_ended";
+    }
+    return "approved";
+  }
+  if (row.status === "removed") return "removed";
+  return "pending";
+}
 
 export function useAccessStatus() {
   return useQuery({
@@ -42,11 +58,11 @@ export function useAccessStatus() {
       if (!userData.user) return "pending";
       const { data, error } = await supabase
         .from("account_access")
-        .select("status")
+        .select("status,access_until")
         .eq("id", userData.user.id)
         .maybeSingle();
       if (error) throw error;
-      return (data?.status as AccessStatus) ?? "pending";
+      return resolveAccess(data);
     },
   });
 }

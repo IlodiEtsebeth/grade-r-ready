@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveAccess } from "@/lib/child-data";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -9,10 +10,10 @@ export const Route = createFileRoute("/_authenticated")({
 
     const { data: access } = await supabase
       .from("account_access")
-      .select("status")
+      .select("status,access_until")
       .eq("id", data.user.id)
       .maybeSingle();
-    if (access?.status !== "approved") throw redirect({ to: "/pending" });
+    if (resolveAccess(access) !== "approved") throw redirect({ to: "/pending" });
 
     return { user: data.user };
   },
