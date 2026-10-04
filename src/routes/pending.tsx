@@ -75,9 +75,30 @@ function Pending() {
               <h1 className="mt-6 font-display text-xl font-extrabold tracking-tight text-balance">
                 {t("pending.waiting.heading", lang)}
               </h1>
-              <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-                {t("pending.waiting.body", lang)}
-              </p>
+              <div className="mt-4 w-full rounded-2xl bg-surface/70 p-4 text-left ring-1 ring-line">
+                <p className="text-[13px] font-semibold">
+                  {t("pending.waiting.paidHeading", lang)}
+                </p>
+                <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                  {t("pending.waiting.paidBody", lang)}
+                </p>
+              </div>
+              <div className="mt-3 w-full rounded-2xl bg-surface/70 p-4 text-left ring-1 ring-line">
+                <p className="text-[13px] font-semibold">
+                  {t("pending.waiting.notPaidHeading", lang)}
+                </p>
+                <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                  {t("pending.waiting.notPaidBody", lang)}
+                </p>
+                <a
+                  href="https://pieceofplay.co.za"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 block rounded-xl bg-foreground py-3 text-center text-[13px] font-semibold text-background transition active:scale-[0.99]"
+                >
+                  {t("pending.buyButton", lang)}
+                </a>
+              </div>
             </>
           )}
 

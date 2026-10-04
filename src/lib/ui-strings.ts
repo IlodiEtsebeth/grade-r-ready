@@ -193,6 +193,7 @@ export const UI: Record<string, Entry> = {
   "password.hideAria": { en: "Hide password", af: "Versteek wagwoord" },
   "password.show": { en: "Show", af: "Wys" },
   "password.showAria": { en: "Show password", af: "Wys wagwoord" },
+  "pending.buyButton": { en: "Get Grade R Ready – R99", af: "Kry Grade R Ready – R99" },
   "pending.checking": { en: "Checking your account…", af: "Besig om jou rekening na te gaan…" },
   "pending.removed.body": {
     en: "Your access to Grade R Ready has been removed. If you think this is a mistake, please contact Piece of Play directly.",
@@ -205,11 +206,17 @@ export const UI: Record<string, Entry> = {
     af: "Jou 5-dag gratis proeftydperk is verby. Baie dankie dat jy Grade R Ready getoets het! Kyk in jou e-pos vir jou spesiale aanbod om die app verder te gebruik. Alles wat jy afgemerk het, is gestoor en wag vir jou.",
   },
   "pending.trialEnded.heading": { en: "Thank you for testing!", af: "Dankie dat jy getoets het!" },
-  "pending.waiting.body": {
-    en: "Your account is being reviewed. This is usually quick — you'll get access as soon as it's confirmed, no need to sign up again.",
-    af: "Jou rekening word nagegaan. Dit is gewoonlik vinnig - jy sal toegang kry sodra dit bevestig is, jy hoef nie weer in te teken nie.",
+  "pending.waiting.heading": { en: "Almost there!", af: "Amper daar!" },
+  "pending.waiting.notPaidBody": {
+    en: "Get Grade R Ready for R99 on the Piece of Play website. When you pay, please use the same email address you signed up with, so we can find your account.",
+    af: "Kry Grade R Ready vir R99 op die Piece of Play-webwerf. Gebruik asseblief dieselfde e-posadres waarmee jy ingeteken het wanneer jy betaal, sodat ons jou rekening kan vind.",
   },
-  "pending.waiting.heading": { en: "You're on the list!", af: "Jy is op die lys!" },
+  "pending.waiting.notPaidHeading": { en: "Haven't paid yet?", af: "Nog nie betaal nie?" },
+  "pending.waiting.paidBody": {
+    en: "Your account will be unlocked within 24 hours, and we'll let you know as soon as you're in. There's no need to sign up again.",
+    af: "Jou rekening sal binne 24 uur oopgesluit word, en ons sal jou laat weet sodra jy toegang het. Jy hoef nie weer in te teken nie.",
+  },
+  "pending.waiting.paidHeading": { en: "Already paid?", af: "Reeds betaal?" },
   "photo.add": { en: "+ photo", af: "+ foto" },
   "photo.cameraDenied": {
     en: "Grade R Ready isn't allowed to use your camera. You can allow it in your phone's settings, or choose a photo from your gallery.",
