@@ -17,6 +17,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
 import { Route as AuthenticatedChecklistRouteImport } from './routes/_authenticated/checklist'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedPhotosRouteImport } from './routes/_authenticated/photos'
 import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
@@ -61,6 +62,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPhotosRoute = AuthenticatedPhotosRouteImport.update({
+  id: '/photos',
+  path: '/photos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProgressRoute = AuthenticatedProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/activities': typeof AuthenticatedActivitiesRoute
   '/checklist': typeof AuthenticatedChecklistRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/photos': typeof AuthenticatedPhotosRoute
   '/progress': typeof AuthenticatedProgressRoute
   '/report': typeof AuthenticatedReportRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/activities': typeof AuthenticatedActivitiesRoute
   '/checklist': typeof AuthenticatedChecklistRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/photos': typeof AuthenticatedPhotosRoute
   '/progress': typeof AuthenticatedProgressRoute
   '/report': typeof AuthenticatedReportRoute
   '/setup': typeof AuthenticatedSetupRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/activities': typeof AuthenticatedActivitiesRoute
   '/_authenticated/checklist': typeof AuthenticatedChecklistRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/photos': typeof AuthenticatedPhotosRoute
   '/_authenticated/progress': typeof AuthenticatedProgressRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/activities'
     | '/checklist'
     | '/dashboard'
+    | '/photos'
     | '/progress'
     | '/report'
     | '/setup'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/activities'
     | '/checklist'
     | '/dashboard'
+    | '/photos'
     | '/progress'
     | '/report'
     | '/setup'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/_authenticated/activities'
     | '/_authenticated/checklist'
     | '/_authenticated/dashboard'
+    | '/_authenticated/photos'
     | '/_authenticated/progress'
     | '/_authenticated/report'
     | '/_authenticated/setup'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/photos': {
+      id: '/_authenticated/photos'
+      path: '/photos'
+      fullPath: '/photos'
+      preLoaderRoute: typeof AuthenticatedPhotosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/progress': {
       id: '/_authenticated/progress'
       path: '/progress'
@@ -267,6 +286,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedActivitiesRoute: typeof AuthenticatedActivitiesRoute
   AuthenticatedChecklistRoute: typeof AuthenticatedChecklistRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPhotosRoute: typeof AuthenticatedPhotosRoute
   AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
@@ -277,6 +297,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedActivitiesRoute: AuthenticatedActivitiesRoute,
   AuthenticatedChecklistRoute: AuthenticatedChecklistRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPhotosRoute: AuthenticatedPhotosRoute,
   AuthenticatedProgressRoute: AuthenticatedProgressRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,

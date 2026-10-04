@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AppShell, Card, ScreenHeader } from "@/components/app-shell";
+import { PhotoTile, usePhotoEntries } from "@/components/photo-gallery";
 import {
   CATEGORIES,
   TOTAL_ACTIVITIES,
@@ -54,6 +55,7 @@ function ProgressPage() {
   const { data: child, isLoading } = useChild();
   const { data: checklist } = useChecklist(child?.id);
   const { data: activityRows } = useActivities(child?.id);
+  const photoEntries = usePhotoEntries(child?.id);
 
   useEffect(() => {
     document.title = t("title.progress", lang);
@@ -217,6 +219,27 @@ function ProgressPage() {
         <p className="mt-3 font-mono text-[10px] text-muted-foreground">
           {t("progress.weekCaption", lang)}
         </p>
+      </Card>
+
+      <p className="px-1 font-display text-[15px] font-bold">{t("progress.photos", lang)}</p>
+      <Card>
+        {photoEntries.length === 0 ? (
+          <p className="text-[13px] text-muted-foreground">{t("progress.photosEmpty", lang)}</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-2">
+              {photoEntries.slice(0, 6).map((entry) => (
+                <PhotoTile key={entry.key} entry={entry} />
+              ))}
+            </div>
+            <Link
+              to="/photos"
+              className="mt-3 block rounded-xl bg-surface/70 py-2.5 text-center text-[12px] font-semibold ring-1 ring-line transition active:scale-[0.99]"
+            >
+              {t("progress.seeAllPhotos", lang, { n: photoEntries.length })}
+            </Link>
+          </>
+        )}
       </Card>
 
       <p className="px-1 font-display text-[15px] font-bold">{t("progress.recentUpdates", lang)}</p>

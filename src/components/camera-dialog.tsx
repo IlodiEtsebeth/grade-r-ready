@@ -43,7 +43,11 @@ export function CameraDialog({
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1440 } },
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 },
+          height: { ideal: 1440 },
+        },
         audio: false,
       });
       streamRef.current = stream;
@@ -126,7 +130,9 @@ export function CameraDialog({
           aria-describedby={undefined}
           className="fixed inset-0 z-50 flex flex-col bg-black text-white focus:outline-none"
         >
-          <DialogPrimitive.Title className="sr-only">{t("photo.cameraTitle", lang)}</DialogPrimitive.Title>
+          <DialogPrimitive.Title className="sr-only">
+            {t("photo.cameraTitle", lang)}
+          </DialogPrimitive.Title>
 
           <input
             ref={galleryRef}
@@ -154,7 +160,11 @@ export function CameraDialog({
             {state === "starting" && (
               <p className="text-sm text-white/80">{t("photo.startingCamera", lang)}</p>
             )}
-            {message && <p className="max-w-xs px-6 text-center text-sm leading-relaxed text-white/90">{message}</p>}
+            {message && (
+              <p className="max-w-xs px-6 text-center text-sm leading-relaxed text-white/90">
+                {message}
+              </p>
+            )}
 
             <DialogPrimitive.Close
               aria-label={t("photo.close", lang)}

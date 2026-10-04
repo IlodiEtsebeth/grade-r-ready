@@ -80,6 +80,7 @@ export const UI: Record<string, Entry> = {
     af: "Daardie wagwoorde stem nie ooreen nie.",
   },
   "checklist.eyebrow.all": { en: "All skill areas", af: "Alle vaardigheidsareas" },
+  "checklist.eyebrow.chooseArea": { en: "Choose a skill area", af: "Kies 'n vaardigheidsarea" },
   "checklist.eyebrow.one": { en: "One skill area", af: "Een vaardigheidsarea" },
   "checklist.instructions": {
     en: "Tap Not yet, Developing or Mastered for each skill. Tap the note icon to add a quick note.",
@@ -253,6 +254,20 @@ export const UI: Record<string, Entry> = {
   "progress.journey": { en: "{name}'s journey", af: "{name} se reis" },
   "progress.readinessScore": { en: "Readiness score", af: "Gereedheidstelling" },
   "progress.recentUpdates": { en: "Recent updates", af: "Onlangse opdaterings" },
+  "progress.photos": { en: "Photos", af: "Foto's" },
+  "progress.photosEmpty": {
+    en: "Photos you add on the checklist or activities will show up here.",
+    af: "Foto's wat jy by die kontrolelys of aktiwiteite byvoeg, sal hier verskyn.",
+  },
+  "progress.seeAllPhotos": { en: "See all {n} photos", af: "Sien al {n} foto's" },
+  "photos.eyebrow": { en: "Photo gallery", af: "Fotogalery" },
+  "photos.title": { en: "{name}'s photos", af: "{name} se foto's" },
+  "photos.empty": {
+    en: 'No photos yet. Tap "+ photo" on a checklist skill or an activity to add one.',
+    af: "Nog geen foto's nie. Tik op \"+ foto\" by 'n kontrolelys-vaardigheid of aktiwiteit om een by te voeg.",
+  },
+  "photos.print": { en: "Download or print my photos", af: "Laai af of druk my foto's" },
+  "photos.weekActivity": { en: "Week {n} activity", af: "Week {n} aktiwiteit" },
   "progress.seeReport": { en: "See the readiness report", af: "Sien die gereedheidsverslag" },
   "progress.update.activityCompleted": { en: "Activity completed", af: "Aktiwiteit voltooi" },
   "progress.update.activityUpdated": { en: "Activity updated", af: "Aktiwiteit opgedateer" },
@@ -397,6 +412,7 @@ export const UI: Record<string, Entry> = {
     af: "Grade R Ready - Is jou kind gereed vir Graad 1?",
   },
   "title.pending": { en: "Almost there — Grade R Ready", af: "Amper daar - Grade R Ready" },
+  "title.photos": { en: "Photo gallery — Grade R Ready", af: "Fotogalery - Grade R Ready" },
   "title.progress": { en: "Progress tracker — Grade R Ready", af: "Vordering - Grade R Ready" },
   "title.report": {
     en: "Grade 1 readiness report — Grade R Ready",

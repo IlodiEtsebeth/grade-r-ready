@@ -65,7 +65,8 @@ function Checklist() {
     photos[row.item_id] = row.photo_path;
   }
 
-  const categories = categoryParam ? CATEGORIES.filter((c) => c.id === categoryParam) : CATEGORIES;
+  const activeCategory = CATEGORIES.find((c) => c.id === categoryParam) ?? CATEGORIES[0]!;
+  const categories = [activeCategory];
 
   function setStatus(itemId: string, status: ChecklistStatus) {
     saveItem.mutate({ itemId, status });
@@ -84,20 +85,40 @@ function Checklist() {
   return (
     <AppShell>
       <ScreenHeader
-        eyebrow={
-          categoryParam ? t("checklist.eyebrow.one", lang) : t("checklist.eyebrow.all", lang)
-        }
+        eyebrow={t("checklist.eyebrow.chooseArea", lang)}
         title={t("checklist.title", lang)}
       />
 
-      {categoryParam && (
-        <button
-          onClick={() => navigate({ to: "/checklist", search: {} })}
-          className="self-start rounded-full bg-surface/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground ring-1 ring-line"
-        >
-          {t("checklist.showAll", lang)}
-        </button>
-      )}
+      <div className="flex flex-wrap gap-2" role="tablist">
+        {CATEGORIES.map((c) => {
+          const active = c.id === activeCategory.id;
+          const done = c.items.filter((i) => statuses[i.id] === "mastered").length;
+          return (
+            <button
+              key={c.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => {
+                setOpenNoteFor(null);
+                navigate({ to: "/checklist", search: { category: c.id }, replace: true });
+              }}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-semibold transition active:scale-95 ${
+                active
+                  ? "bg-foreground text-background"
+                  : "bg-surface/70 text-foreground ring-1 ring-line"
+              }`}
+            >
+              <span className={`size-2 shrink-0 rounded-full bg-${c.tone}`} />
+              {c.name[lang]}
+              <span
+                className={`font-mono text-[10px] ${active ? "text-background/70" : "text-muted-foreground"}`}
+              >
+                {done}/{c.items.length}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       <p className="px-1 text-[12px] text-muted-foreground">{t("checklist.instructions", lang)}</p>
 
