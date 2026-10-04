@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { CameraDialog } from "@/components/camera-dialog";
 import { uploadPhoto, usePhotoUrl } from "@/lib/child-data";
 import { useLanguage } from "@/lib/language";
 import { t } from "@/lib/ui-strings";
@@ -17,7 +18,7 @@ export function PhotoAttach({
   className?: string;
 }) {
   const { lang } = useLanguage();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { data: url } = usePhotoUrl(photoPath);
@@ -42,14 +43,7 @@ export function PhotoAttach({
 
   return (
     <div className={className}>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        onChange={(e) => handleFile(e.target.files?.[0])}
-      />
+      <CameraDialog open={cameraOpen} onOpenChange={setCameraOpen} onPhoto={handleFile} />
       <div className="flex items-center gap-2">
         {url && (
           <DialogPrimitive.Root>
@@ -97,7 +91,7 @@ export function PhotoAttach({
         )}
         <button
           type="button"
-          onClick={() => inputRef.current?.click()}
+          onClick={() => setCameraOpen(true)}
           disabled={busy}
           className="rounded-full bg-surface/70 px-2.5 py-1 font-mono text-[10px] text-muted-foreground ring-1 ring-line disabled:opacity-60"
         >
