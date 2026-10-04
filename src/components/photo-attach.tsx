@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 import { uploadPhoto, usePhotoUrl } from "@/lib/child-data";
 import { useLanguage } from "@/lib/language";
 import { t } from "@/lib/ui-strings";
@@ -50,11 +52,48 @@ export function PhotoAttach({
       />
       <div className="flex items-center gap-2">
         {url && (
-          <img
-            src={url}
-            alt=""
-            className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-line"
-          />
+          <DialogPrimitive.Root>
+            <DialogPrimitive.Trigger asChild>
+              <button
+                type="button"
+                aria-label={t("photo.view", lang)}
+                className="shrink-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <img
+                  src={url}
+                  alt=""
+                  className="size-9 rounded-lg object-cover ring-1 ring-line"
+                />
+              </button>
+            </DialogPrimitive.Trigger>
+            <DialogPrimitive.Portal>
+              <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/90 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+              <DialogPrimitive.Content
+                aria-describedby={undefined}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-[calc(env(safe-area-inset-top,0px)+4rem)] pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] focus:outline-none"
+              >
+                <DialogPrimitive.Title className="sr-only">
+                  {t("photo.view", lang)}
+                </DialogPrimitive.Title>
+                <DialogPrimitive.Close asChild>
+                  {/* Tapping anywhere on the photo area also closes it */}
+                  <button type="button" className="flex h-full w-full items-center justify-center" tabIndex={-1}>
+                    <img
+                      src={url}
+                      alt=""
+                      className="max-h-full max-w-full rounded-xl object-contain shadow-lg"
+                    />
+                  </button>
+                </DialogPrimitive.Close>
+                <DialogPrimitive.Close
+                  aria-label={t("photo.close", lang)}
+                  className="absolute right-4 top-[calc(env(safe-area-inset-top,0px)+1rem)] flex size-10 items-center justify-center rounded-full bg-white/90 text-black shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <X className="size-5" />
+                </DialogPrimitive.Close>
+              </DialogPrimitive.Content>
+            </DialogPrimitive.Portal>
+          </DialogPrimitive.Root>
         )}
         <button
           type="button"

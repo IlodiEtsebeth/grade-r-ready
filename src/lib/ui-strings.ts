@@ -175,7 +175,7 @@ export const UI: Record<string, Entry> = {
   },
   "landing.feature3.title": { en: "One clear answer", af: "Een duidelike antwoord" },
   "landing.finePrint": {
-    en: "Free · one Grade R child per account",
+    en: "One Grade R child per account",
     af: "Een Graad R-kind per rekening",
   },
   "landing.heading": {
@@ -210,6 +210,8 @@ export const UI: Record<string, Entry> = {
   },
   "pending.waiting.heading": { en: "You're on the list!", af: "Jy is op die lys!" },
   "photo.add": { en: "+ photo", af: "+ foto" },
+  "photo.close": { en: "Close", af: "Maak toe" },
+  "photo.view": { en: "View photo", af: "Bekyk foto" },
   "photo.replace": { en: "replace photo", af: "vervang foto" },
   "photo.tooLarge": {
     en: "That photo is a bit large — try one under 8MB.",

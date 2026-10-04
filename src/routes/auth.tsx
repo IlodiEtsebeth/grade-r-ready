@@ -19,7 +19,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — Grade R Ready" },
       {
         name: "description",
-        content: "Sign in or create a free parent account to track your Grade R child's readiness.",
+        content: "Sign in or create a parent account to track your Grade R child's readiness.",
       },
       { property: "og:title", content: "Sign in — Grade R Ready" },
       {
