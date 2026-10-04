@@ -211,7 +211,7 @@ export const UI: Record<string, Entry> = {
   "pending.waiting.heading": { en: "You're on the list!", af: "Jy is op die lys!" },
   "photo.add": { en: "+ photo", af: "+ foto" },
   "photo.close": { en: "Close", af: "Maak toe" },
-  "photo.view": { en: "View photo", af: "Bekyk foto" },
+  "photo.view": { en: "View photo", af: "Sien foto" },
   "photo.replace": { en: "replace photo", af: "vervang foto" },
   "photo.tooLarge": {
     en: "That photo is a bit large — try one under 8MB.",
